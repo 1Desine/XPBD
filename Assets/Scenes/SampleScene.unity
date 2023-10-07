@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
+  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -175,9 +175,9 @@ MonoBehaviour:
   inverseStiffness: 0.5
   gravity: {x: 0, y: -9.81}
   pressure: 1
+  forceToTear: 0.2
   substeps: 10
   iterations: 1
-  objectMaterial: {fileID: 2100000, guid: 8afddea651ee34d499a9019830a3b11a, type: 2}
 --- !u!23 &516154208
 MeshRenderer:
   m_ObjectHideFlags: 0
