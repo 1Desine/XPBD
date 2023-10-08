@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -136,7 +136,7 @@ GameObject:
   - component: {fileID: 516154209}
   - component: {fileID: 516154208}
   m_Layer: 0
-  m_Name: Softbody2d
+  m_Name: Softbody2D
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -169,13 +169,226 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c502d2b05ca679943913ffacfa100f50, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  softbodyJsonRelativePath: \ObjectsJson\2D\Softbody\Softbody2D.txt
   mesh: {fileID: -2432090755550338912, guid: 689758cd52a96bf42be12048153af753, type: 3}
-  useMesh: 1
+  pointMassList:
+  - softbody: {fileID: 516154207}
+    id: 0
+    position: {x: 0, y: -1}
+    previousPosition: {x: 0, y: 0}
+    velocity: {x: 0, y: 0}
+  - softbody: {fileID: 516154207}
+    id: 1
+    position: {x: -0.866025, y: -0.5}
+    previousPosition: {x: 0, y: 0}
+    velocity: {x: 0, y: 0}
+  - softbody: {fileID: 516154207}
+    id: 2
+    position: {x: 0.866025, y: -0.5}
+    previousPosition: {x: 0, y: 0}
+    velocity: {x: 0, y: 0}
+  - softbody: {fileID: 516154207}
+    id: 3
+    position: {x: 0, y: 1}
+    previousPosition: {x: 0, y: 0}
+    velocity: {x: 0, y: 0}
+  - softbody: {fileID: 516154207}
+    id: 4
+    position: {x: -0.866025, y: 0.5}
+    previousPosition: {x: 0, y: 0}
+    velocity: {x: 0, y: 0}
+  - softbody: {fileID: 516154207}
+    id: 5
+    position: {x: 0.866025, y: 0.5}
+    previousPosition: {x: 0, y: 0}
+    velocity: {x: 0, y: 0}
+  linearConstraintsList:
+  - softbody: {fileID: 516154207}
+    pointL:
+      softbody: {fileID: 516154207}
+      id: 0
+      position: {x: 0, y: -1}
+      previousPosition: {x: 0, y: 0}
+      velocity: {x: 0, y: 0}
+    pointR:
+      softbody: {fileID: 516154207}
+      id: 1
+      position: {x: -0.866025, y: -0.5}
+      previousPosition: {x: 0, y: 0}
+      velocity: {x: 0, y: 0}
+    defaultDistance: 0.99999964
+    inverseStiffness: 0.5
+    weirdA: 1250
+    lambda: 0
+    deltaLambda: 0
+    volumetric: 1
+    tearable: 1
+  - softbody: {fileID: 516154207}
+    pointL:
+      softbody: {fileID: 516154207}
+      id: 1
+      position: {x: -0.866025, y: -0.5}
+      previousPosition: {x: 0, y: 0}
+      velocity: {x: 0, y: 0}
+    pointR:
+      softbody: {fileID: 516154207}
+      id: 2
+      position: {x: 0.866025, y: -0.5}
+      previousPosition: {x: 0, y: 0}
+      velocity: {x: 0, y: 0}
+    defaultDistance: 1.73205
+    inverseStiffness: 0.5
+    weirdA: 1250
+    lambda: 0
+    deltaLambda: 0
+    volumetric: 1
+    tearable: 1
+  - softbody: {fileID: 516154207}
+    pointL:
+      softbody: {fileID: 516154207}
+      id: 2
+      position: {x: 0.866025, y: -0.5}
+      previousPosition: {x: 0, y: 0}
+      velocity: {x: 0, y: 0}
+    pointR:
+      softbody: {fileID: 516154207}
+      id: 0
+      position: {x: 0, y: -1}
+      previousPosition: {x: 0, y: 0}
+      velocity: {x: 0, y: 0}
+    defaultDistance: 0.99999964
+    inverseStiffness: 0.5
+    weirdA: 1250
+    lambda: 0
+    deltaLambda: 0
+    volumetric: 1
+    tearable: 1
+  - softbody: {fileID: 516154207}
+    pointL:
+      softbody: {fileID: 516154207}
+      id: 1
+      position: {x: -0.866025, y: -0.5}
+      previousPosition: {x: 0, y: 0}
+      velocity: {x: 0, y: 0}
+    pointR:
+      softbody: {fileID: 516154207}
+      id: 3
+      position: {x: 0, y: 1}
+      previousPosition: {x: 0, y: 0}
+      velocity: {x: 0, y: 0}
+    defaultDistance: 1.7320505
+    inverseStiffness: 0.5
+    weirdA: 1250
+    lambda: 0
+    deltaLambda: 0
+    volumetric: 1
+    tearable: 1
+  - softbody: {fileID: 516154207}
+    pointL:
+      softbody: {fileID: 516154207}
+      id: 3
+      position: {x: 0, y: 1}
+      previousPosition: {x: 0, y: 0}
+      velocity: {x: 0, y: 0}
+    pointR:
+      softbody: {fileID: 516154207}
+      id: 2
+      position: {x: 0.866025, y: -0.5}
+      previousPosition: {x: 0, y: 0}
+      velocity: {x: 0, y: 0}
+    defaultDistance: 1.7320505
+    inverseStiffness: 0.5
+    weirdA: 1250
+    lambda: 0
+    deltaLambda: 0
+    volumetric: 1
+    tearable: 1
+  - softbody: {fileID: 516154207}
+    pointL:
+      softbody: {fileID: 516154207}
+      id: 4
+      position: {x: -0.866025, y: 0.5}
+      previousPosition: {x: 0, y: 0}
+      velocity: {x: 0, y: 0}
+    pointR:
+      softbody: {fileID: 516154207}
+      id: 3
+      position: {x: 0, y: 1}
+      previousPosition: {x: 0, y: 0}
+      velocity: {x: 0, y: 0}
+    defaultDistance: 0.99999964
+    inverseStiffness: 0.5
+    weirdA: 1250
+    lambda: 0
+    deltaLambda: 0
+    volumetric: 1
+    tearable: 1
+  - softbody: {fileID: 516154207}
+    pointL:
+      softbody: {fileID: 516154207}
+      id: 1
+      position: {x: -0.866025, y: -0.5}
+      previousPosition: {x: 0, y: 0}
+      velocity: {x: 0, y: 0}
+    pointR:
+      softbody: {fileID: 516154207}
+      id: 4
+      position: {x: -0.866025, y: 0.5}
+      previousPosition: {x: 0, y: 0}
+      velocity: {x: 0, y: 0}
+    defaultDistance: 1
+    inverseStiffness: 0.5
+    weirdA: 1250
+    lambda: 0
+    deltaLambda: 0
+    volumetric: 1
+    tearable: 1
+  - softbody: {fileID: 516154207}
+    pointL:
+      softbody: {fileID: 516154207}
+      id: 5
+      position: {x: 0.866025, y: 0.5}
+      previousPosition: {x: 0, y: 0}
+      velocity: {x: 0, y: 0}
+    pointR:
+      softbody: {fileID: 516154207}
+      id: 2
+      position: {x: 0.866025, y: -0.5}
+      previousPosition: {x: 0, y: 0}
+      velocity: {x: 0, y: 0}
+    defaultDistance: 1
+    inverseStiffness: 0.5
+    weirdA: 1250
+    lambda: 0
+    deltaLambda: 0
+    volumetric: 1
+    tearable: 1
+  - softbody: {fileID: 516154207}
+    pointL:
+      softbody: {fileID: 516154207}
+      id: 3
+      position: {x: 0, y: 1}
+      previousPosition: {x: 0, y: 0}
+      velocity: {x: 0, y: 0}
+    pointR:
+      softbody: {fileID: 516154207}
+      id: 5
+      position: {x: 0.866025, y: 0.5}
+      previousPosition: {x: 0, y: 0}
+      velocity: {x: 0, y: 0}
+    defaultDistance: 0.99999964
+    inverseStiffness: 0.5
+    weirdA: 1250
+    lambda: 0
+    deltaLambda: 0
+    volumetric: 1
+    tearable: 1
   mass: 1
   inverseStiffness: 0.5
-  gravity: {x: 0, y: -9.81}
-  pressure: 1
   forceToTear: 0.2
+  pressure: 1
+  gravity: {x: 0, y: -9.81}
+  volumeConstraintToUse: 1
   substeps: 10
   iterations: 1
 --- !u!23 &516154208

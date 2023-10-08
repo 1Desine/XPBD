@@ -5,109 +5,73 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using UnityEngine.Rendering;
+using System.Xml.Linq;
+using Unity.VisualScripting;
+using System.IO;
 
-public class Softbody2 : MonoBehaviour {
+public class Softbody2D : MonoBehaviour {
+
+    [Header("Source of object")]
+    [SerializeField] private string softbodyJsonRelativePath;
     [SerializeField] private Mesh mesh;
-    [SerializeField] private bool useMesh;
 
-    private List<PointMass> pointMassList = new List<PointMass>();
-    private List<LinearConstraint> linearConstraintsList = new List<LinearConstraint>();
+    [Header("there should be non of that")]
+    [SerializeField] private List<PointMass> pointMassList;
+    [SerializeField] private List<LinearConstraint> linearConstraintsList;
     private List<int> tornLinearConstraintsIndexesList = new List<int>();
     private List<LinearConstraint> linearMouseDragConstraintsList = new List<LinearConstraint>();
-    private List<Peak> peaksList = new List<Peak>();
 
+    [Header("Properties")]
     [SerializeField] private float mass = 1f;
     [SerializeField, Range(0f, 1f)] private float inverseStiffness = 0.5f;
     private float previousInverseStiffness;
-    [SerializeField] private Vector2 gravity = Vector2.down * 9.81f;
-    [SerializeField, Range(0f, 100f)] private float pressure = 1;
-    private float defasultVolume;
     [SerializeField, Range(0.01f, 1f)] private float forceToTear = 0.2f;
     private bool torn = false;
+    [SerializeField, Range(0f, 100f)] private float pressure = 1;
+    private float defasultVolume;
+    [SerializeField] private Vector2 gravity = Vector2.down * 9.81f;
 
+    [Header("Computation")]
+    [SerializeField, Range(0, 2)] private int volumeConstraintToUse = 1;
     [SerializeField] private uint substeps = 10; // splitting FixedUpdate
     [SerializeField] private uint iterations = 1; // of solving the constraints per substep
+
+    private PointMass[] points;
 
     private MeshFilter meshFilter;
 
     private void Awake() {
         meshFilter = GetComponent<MeshFilter>();
 
-        if (useMesh) LoadObjectFromMesh();
+        SetSoftbodyFromMesh();
 
-        // inner constraints remove
         if (false) {
             linearConstraintsList.RemoveAt(4);
             linearConstraintsList.RemoveAt(3);
             linearConstraintsList.RemoveAt(1);
         }
-        // need to be set as non volumetric
-        else {
+        if (true) {
             linearConstraintsList[4].volumetric = false;
             linearConstraintsList[3].volumetric = false;
             linearConstraintsList[1].volumetric = false;
         }
 
+        //Debug.Log(points.Length);
+
         defasultVolume = GetVolume();
-
-        SetPeaks();
     }
 
-    private void SetPeaks() {
-        foreach (var pointMass in pointMassList) {
-            PointMass leftPoint = null;
-            PointMass rightPoint = null;
-            foreach (LinearConstraint linearConstraint in linearConstraintsList) {
-                if (linearConstraint.volumetric == false) continue;
-                if (pointMass == linearConstraint.point0) rightPoint = linearConstraint.point1;
-                if (pointMass == linearConstraint.point1) leftPoint = linearConstraint.point0;
-            }
-            if (leftPoint != null && rightPoint != null) peaksList.Add(new Peak {
-                pointL = leftPoint,
-                pointR = rightPoint,
-            });
-        }
-    }
 
-    private void LoadObjectFromMesh() {
-        // Initiate pointMassList from mesh
-        foreach (var vertex in mesh.vertices) {
-            pointMassList.Add(new PointMass(vertex, this));
-            //pointMassVisualList.Add(Instantiate(visualPrefab, transform));
-        }
-        // Sign in nearest points
-        for (int posInTriangles = 0; posInTriangles < mesh.triangles.Length; posInTriangles += 3) {
-            PointMass v0 = pointMassList[0]; // HOLDER
-            PointMass v1 = pointMassList[0]; // HOLDER
-            PointMass v2 = pointMassList[0]; // HOLDER
-            foreach (var pointMass in pointMassList) {
-                if (pointMass.position == (Vector2)mesh.vertices[mesh.triangles[posInTriangles + 0]]) v0 = pointMass;
-                if (pointMass.position == (Vector2)mesh.vertices[mesh.triangles[posInTriangles + 1]]) v1 = pointMass;
-                if (pointMass.position == (Vector2)mesh.vertices[mesh.triangles[posInTriangles + 2]]) v2 = pointMass;
-            }
 
-            // Check from pointMass, does it have connections with other pointMasses in this triangle
-            if (PointsAreConnected(v0, v1) == false) linearConstraintsList.Add(new LinearConstraint(v0, v1, inverseStiffness, true, this));
-            if (PointsAreConnected(v1, v2) == false) linearConstraintsList.Add(new LinearConstraint(v1, v2, inverseStiffness, true, this));
-            if (PointsAreConnected(v2, v0) == false) linearConstraintsList.Add(new LinearConstraint(v2, v0, inverseStiffness, true, this));
-        }
-    }
-    private bool PointsAreConnected(PointMass point0, PointMass point1) {
-        foreach (var constraint in linearConstraintsList) {
-            if (constraint.point0 == point0 && constraint.point1 == point1
-             || constraint.point0 == point1 && constraint.point1 == point0) return true;
-        }
-        return false;
-    }
 
     public float GetVolume() {
         float volume = 0.0f;
         for (int i = 0; i < linearConstraintsList.Count; i++) {
             if (linearConstraintsList[i].volumetric == false) continue;
-            float p0x = linearConstraintsList[i].point0.position.x;
-            float p0y = linearConstraintsList[i].point0.position.y;
-            float p1x = linearConstraintsList[i].point1.position.x;
-            float p1y = linearConstraintsList[i].point1.position.y;
+            float p0x = linearConstraintsList[i].pointL.position.x;
+            float p0y = linearConstraintsList[i].pointL.position.y;
+            float p1x = linearConstraintsList[i].pointR.position.x;
+            float p1y = linearConstraintsList[i].pointR.position.y;
 
             volume -= (p0x * p1y - p1x * p0y) / 2f;
         }
@@ -154,7 +118,7 @@ public class Softbody2 : MonoBehaviour {
         //points are connected clockwise
         foreach (LinearConstraint constraint in linearConstraintsList) {
             // LinearConstraints
-            Debug.DrawLine(constraint.point0.position, constraint.point1.position, Color.black);
+            Debug.DrawLine(constraint.pointL.position, constraint.pointR.position, Color.black);
             // constraint nornal
             //Debug.DrawRay((constraint.point0.position + constraint.point1.position) / 2f, Vector2.Perpendicular(constraint.point1.position - constraint.point0.position), Color.black);
 
@@ -211,17 +175,17 @@ public class Softbody2 : MonoBehaviour {
                         pointMass.velocity.y = 0;
                     }
                 }
+
                 // constraints
                 foreach (LinearConstraint constraint in linearConstraintsList) constraint.Solve();
                 // mouse dragging
                 foreach (LinearConstraint constraint in linearMouseDragConstraintsList) {
-                    constraint.point0.position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                    constraint.point0.velocity = Vector2.zero;
+                    constraint.pointL.position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                    constraint.pointL.velocity = Vector2.zero;
                     constraint.Solve();
                 }
                 if (tornLinearConstraintsIndexesList.Count != 0) {
                     foreach (int tornConstraint in tornLinearConstraintsIndexesList) {
-                        Debug.Log(tornConstraint);
                         linearConstraintsList.RemoveAt(tornConstraint);
                     }
                     tornLinearConstraintsIndexesList.Clear();
@@ -255,16 +219,19 @@ public class Softbody2 : MonoBehaviour {
     }
 
 
-    
+
     ///////////////////
     ///////////////////
+    [Serializable]
     private class PointMass {
-        public PointMass(Vector2 position, Softbody2 softbody) {
+        public PointMass(Vector2 position, Softbody2D softbody) {
             this.position = position;
             this.softbody = softbody;
+            id = softbody.pointMassList.Count;
         }
-        public Softbody2 softbody;
+        public Softbody2D softbody;
 
+        public int id;
         public Vector2 position;
         public Vector2 previousPosition;
         public Vector2 velocity;
@@ -272,12 +239,13 @@ public class Softbody2 : MonoBehaviour {
     }
     ///////////////////
     ///////////////////
+    [Serializable]
     private class LinearConstraint {
-        public Softbody2 softbody;
+        public Softbody2D softbody;
 
-        public LinearConstraint(PointMass point0, PointMass point1, float inverseStiffness, bool volumetric, Softbody2 softbody) {
-            this.point0 = point0;
-            this.point1 = point1;
+        public LinearConstraint(PointMass point0, PointMass point1, float inverseStiffness, bool volumetric, Softbody2D softbody) {
+            this.pointL = point0;
+            this.pointR = point1;
             defaultDistance = (point0.position - point1.position).magnitude;
             this.inverseStiffness = inverseStiffness;
             weirdA = inverseStiffness / Time.fixedDeltaTime / Time.fixedDeltaTime;
@@ -285,8 +253,8 @@ public class Softbody2 : MonoBehaviour {
             this.softbody = softbody;
         }
 
-        public PointMass point0;
-        public PointMass point1;
+        public PointMass pointL;
+        public PointMass pointR;
         public float defaultDistance;
         public float inverseStiffness;
         public float weirdA;
@@ -301,8 +269,8 @@ public class Softbody2 : MonoBehaviour {
             ComputeDeltaDistance(); // (17)
         }
         public void ComputeDeltaLambda() { // (18)
-            deltaLambda = (-((point0.position - point1.position).magnitude - defaultDistance) - weirdA * lambda) /
-                (Mathf.Pow(point0.mass, -1) + Mathf.Pow(point1.mass, -1) + weirdA);
+            deltaLambda = (-((pointL.position - pointR.position).magnitude - defaultDistance) - weirdA * lambda) /
+                (Mathf.Pow(pointL.mass, -1) + Mathf.Pow(pointR.mass, -1) + weirdA);
             lambda += deltaLambda;
 
             if (tearable && Mathf.Abs(deltaLambda) > softbody.forceToTear * Time.deltaTime) {
@@ -313,18 +281,20 @@ public class Softbody2 : MonoBehaviour {
             }
         }
         public void ComputeVolumeConstraint() {
-            int volumeConstraintToUse = 1;
-
-            if (volumeConstraintToUse == 1) {
+            if (softbody.volumeConstraintToUse == 1) {
                 float desiredPressure = softbody.GetVolume() - softbody.defasultVolume * softbody.pressure;
 
                 List<Vector2> Jj = new List<Vector2>(new Vector2[softbody.pointMassList.Count]);
 
-                for (int j = 0; j < softbody.peaksList.Count; j++) {
-                    Jj[j] = (Vector2.Perpendicular(softbody.pointMassList[j].position - softbody.peaksList[j].pointL.position)
-                        + Vector2.Perpendicular(softbody.peaksList[j].pointR.position - softbody.pointMassList[j].position)) / 2f;
+                for (int j = 0; j < softbody.linearConstraintsList.Count; j++) {
+                    if (softbody.linearConstraintsList[j].volumetric == false) continue;
+                    Jj[softbody.linearConstraintsList[j].pointL.id] += Vector2.Perpendicular(softbody.linearConstraintsList[j].pointR.position - softbody.linearConstraintsList[j].pointL.position);
+                    Jj[softbody.linearConstraintsList[j].pointR.id] += Vector2.Perpendicular(softbody.linearConstraintsList[j].pointR.position - softbody.linearConstraintsList[j].pointL.position);
+                }
 
-                    Debug.DrawRay(softbody.pointMassList[j].position, Jj[j] * desiredPressure, Color.red);
+                for (int j = 0; j < softbody.linearConstraintsList.Count; j++) {
+                    Debug.DrawRay(softbody.linearConstraintsList[j].pointL.position, Jj[softbody.linearConstraintsList[j].pointL.id] * desiredPressure, Color.red);
+                    Debug.DrawRay(softbody.linearConstraintsList[j].pointR.position, Jj[softbody.linearConstraintsList[j].pointR.id] * desiredPressure, Color.red);
                 }
                 float Denom = weirdA;
                 for (int i = 0; i < softbody.pointMassList.Count; i++) {
@@ -338,43 +308,38 @@ public class Softbody2 : MonoBehaviour {
                 }
 
                 lambda += volumeDeviation;
+
             }
             // garbage version
-            if (volumeConstraintToUse == 2) {
+            if (softbody.volumeConstraintToUse == 2) {
                 float desiredPressure = softbody.GetVolume() - softbody.defasultVolume * softbody.pressure;
 
                 float lenghOfAllConstraints = 0f;
                 foreach (var constraint in softbody.linearConstraintsList) {
                     if (volumetric == false) continue;
-                    lenghOfAllConstraints += (constraint.point0.position - constraint.point1.position).magnitude;
+                    lenghOfAllConstraints += (constraint.pointL.position - constraint.pointR.position).magnitude;
                 }
 
-                Vector2 forceToConstraint = desiredPressure * Vector2.Perpendicular(point0.position - point1.position).normalized * (point0.position - point1.position).magnitude / lenghOfAllConstraints;
+                Vector2 forceToConstraint = desiredPressure * Vector2.Perpendicular(pointL.position - pointR.position).normalized * (pointL.position - pointR.position).magnitude / lenghOfAllConstraints;
 
-                Debug.DrawRay(point0.position, forceToConstraint);
-                Debug.DrawRay(point1.position, forceToConstraint);
+                Debug.DrawRay(pointL.position, forceToConstraint);
+                Debug.DrawRay(pointR.position, forceToConstraint);
 
-                point0.position += forceToConstraint * Time.fixedDeltaTime;
-                point1.position += forceToConstraint * Time.fixedDeltaTime;
+                pointL.position += forceToConstraint * Time.fixedDeltaTime;
+                pointR.position += forceToConstraint * Time.fixedDeltaTime;
             }
-
         }
         public void ComputeDeltaDistance() { // (17)
-            point0.position += Mathf.Pow(point0.mass, -1) * (point0.position - point1.position).normalized * deltaLambda;
-            point1.position -= Mathf.Pow(point1.mass, -1) * (point0.position - point1.position).normalized * deltaLambda;
+            pointL.position += Mathf.Pow(pointL.mass, -1) * (pointL.position - pointR.position).normalized * deltaLambda;
+            pointR.position -= Mathf.Pow(pointR.mass, -1) * (pointL.position - pointR.position).normalized * deltaLambda;
         }
-        public float GetConstraintValue() => (point0.position - point1.position).magnitude - defaultDistance;
+        public float GetConstraintValue() => (pointL.position - pointR.position).magnitude - defaultDistance;
         public void SetInverseStiffness(float inverseStiffness) {
             this.inverseStiffness = inverseStiffness;
             weirdA = inverseStiffness / Time.fixedDeltaTime / Time.fixedDeltaTime;
         }
     }
-    ///////////////////
-    ///////////////////
-    private class Peak {
-        public PointMass pointR;
-        public PointMass pointL;
-    }
+
 
 
 
@@ -387,28 +352,23 @@ public class Softbody2 : MonoBehaviour {
     ///////////////////
     ///////////////////
     ///////////////////
-    public void OnSceneGUI() {
-        foreach (var point in mesh.vertices) {
-            Gizmos.color = Color.green;
-            Gizmos.DrawSphere(point, 0.1f);
-        }
-    }
 
     [ExecuteInEditMode]
     private void OnDrawGizmos() {
         Gizmos.color = Color.green;
 
-
-
-        foreach (var point in mesh.vertices) {
-            Gizmos.color = Color.blue;
-            Gizmos.DrawSphere(point, 0.05f);
+        if (pointMassList != null) {
+            foreach (PointMass point in pointMassList) {
+                Gizmos.color = Color.green;
+                Gizmos.DrawSphere(point.position, 0.05f);
+            }
         }
 
-
-        foreach (var point in pointMassList) {
-            Gizmos.color = Color.green;
-            Gizmos.DrawSphere(point.position, 0.05f);
+        if (linearConstraintsList != null) {
+            foreach (LinearConstraint linearConstraint in linearConstraintsList) {
+                Gizmos.color = Color.green;
+                Gizmos.DrawLine(linearConstraint.pointL.position, linearConstraint.pointR.position);
+            }
         }
 
 
@@ -416,51 +376,153 @@ public class Softbody2 : MonoBehaviour {
 
 
 #if UNITY_EDITOR
-    [CustomEditor(typeof(Softbody2))]
+    [CustomEditor(typeof(Softbody2D))]
     public class SoftbodyEditor : Editor {
-
-
-        private void OnDrawGizmos() {
-            Softbody2 pointMassSoftObject = (Softbody2)target;
-
-            List<PointMass> pointMassList = pointMassSoftObject.pointMassList;
-            foreach (PointMass point in pointMassList) {
-                Gizmos.color = Color.green;
-                Gizmos.DrawSphere(point.position, 0.1f);
-            }
-
-
-        }
-
-
         public void OnSceneGUI() {
-            Softbody2 softBody = (Softbody2)target;
+            Softbody2D softBody = (Softbody2D)target;
 
             List<PointMass> pointMassList = softBody.pointMassList;
-
-            foreach (PointMass point in pointMassList) {
-                EditorGUI.BeginChangeCheck();
-                Vector2 position = Handles.PositionHandle(point.position, Quaternion.identity);
-                if (EditorGUI.EndChangeCheck()) {
-                    point.position = position;
+            if (pointMassList != null) {
+                foreach (PointMass point in pointMassList) {
+                    EditorGUI.BeginChangeCheck();
+                    Vector2 position = Handles.PositionHandle(point.position, Quaternion.identity);
+                    if (EditorGUI.EndChangeCheck()) {
+                        point.position = position;
+                    }
                 }
             }
         }
 
         public override void OnInspectorGUI() {
             base.OnInspectorGUI();
-            Softbody2 softBody = (Softbody2)target;
+            Softbody2D softBody = (Softbody2D)target;
 
             if (softBody.mass < 0) softBody.mass = 0;
             if (softBody.substeps < 1) softBody.substeps = 1;
             if (softBody.iterations < 1) softBody.iterations = 1;
 
+            GUILayout.Label("Load or save Softbody");
+            if (GUILayout.Button("LoadFromMesh"))
+                softBody.SetSoftbodyFromMesh();
+
+            if (GUILayout.Button("LoadFromJson"))
+                softBody.SetSoftbodyFromJson();
+
+            if (GUILayout.Button("SaveToJson"))
+                softBody.SaveSoftbodyToJson();
         }
-
-
     }
 #endif
 
+
+
+
+    // 
+    // SAVE AND LOAD
+    // 
+
+    private class Softbody2DJsonData {
+        public List<PointMass> pointMassList;
+        public List<LinearConstraint> linearConstraintsList;
+
+        public float mass = 1f;
+        public float inverseStiffness = 0.5f;
+        public float previousInverseStiffness;
+        public Vector2 gravity = Vector2.down * 9.81f;
+        public float pressure = 1;
+        public float forceToTear = 0.2f;
+
+        public uint substeps = 10;
+        public uint iterations = 1;
+    }
+
+
+
+    public List<Particle> particlesList = new List<Particle>();
+    public struct Particle {
+        public Vector2 position;
+    }
+    public struct Constainer {
+        public List<Particle> particlesList;
+    }
+    private void SaveSoftbodyToJson() {
+        ///particlesList = new List<Particle>();
+        particlesList.Add(new Particle { position = Vector2.left });
+
+        Constainer container = new Constainer { particlesList = particlesList };
+        Debug.Log(JsonUtility.ToJson(container));
+        Debug.Log(JsonUtility.ToJson(particlesList[0]));
+
+        SaveSystem.WriteJson(softbodyJsonRelativePath, JsonUtility.ToJson(particlesList));
+        //SaveSystem.WriteJson(softbodyJsonRelativePath, JsonUtility.ToJson(this));
+    }
+    private void SetSoftbodyFromJson() {
+        List<Particle> loadedParticlesList = JsonUtility.FromJson<List<Particle>>(SaveSystem.ReadJson(softbodyJsonRelativePath));
+
+        foreach (Particle particle in loadedParticlesList) {
+            Debug.Log(particle.position);
+        }
+
+        //Softbody2DJsonData loadedSoftbody = JsonUtility.FromJson<Softbody2DJsonData>(SaveSystem.ReadJson(softbodyJsonRelativePath));
+
+        //pointMassList = loadedSoftbody.pointMassList;
+        //linearConstraintsList = loadedSoftbody.linearConstraintsList;
+        //
+        //mass = loadedSoftbody.mass;
+        //inverseStiffness = loadedSoftbody.inverseStiffness;
+        //previousInverseStiffness = loadedSoftbody.previousInverseStiffness;
+        //gravity = loadedSoftbody.gravity;
+        //pressure = loadedSoftbody.pressure;
+        //forceToTear = loadedSoftbody.forceToTear;
+        //
+        //substeps = loadedSoftbody.substeps;
+        //iterations = loadedSoftbody.iterations;
+    }
+
+    private void SetSoftbodyFromMesh() {
+        pointMassList = new List<PointMass>();
+        linearConstraintsList = new List<LinearConstraint>();
+
+        mass = 1f;
+        inverseStiffness = 0.5f;
+        gravity = Vector2.down * 9.81f;
+        volumeConstraintToUse = 1;
+        pressure = 1;
+        forceToTear = 0.2f;
+        torn = false;
+
+        substeps = 10;
+        iterations = 1;
+
+        // Initiate pointMassList from mesh
+        foreach (var vertex in mesh.vertices) {
+            pointMassList.Add(new PointMass(vertex, this));
+            //pointMassVisualList.Add(Instantiate(visualPrefab, transform));
+        }
+        // Sign in nearest points
+        for (int posInTriangles = 0; posInTriangles < mesh.triangles.Length; posInTriangles += 3) {
+            PointMass v0 = pointMassList[0]; // HOLDER
+            PointMass v1 = pointMassList[0]; // HOLDER
+            PointMass v2 = pointMassList[0]; // HOLDER
+            foreach (var pointMass in pointMassList) {
+                if (pointMass.position == (Vector2)mesh.vertices[mesh.triangles[posInTriangles + 0]]) v0 = pointMass;
+                if (pointMass.position == (Vector2)mesh.vertices[mesh.triangles[posInTriangles + 1]]) v1 = pointMass;
+                if (pointMass.position == (Vector2)mesh.vertices[mesh.triangles[posInTriangles + 2]]) v2 = pointMass;
+            }
+
+            // Check from pointMass, does it have connections with other pointMasses in this triangle
+            if (PointsAreConnected(v0, v1) == false) linearConstraintsList.Add(new LinearConstraint(v0, v1, inverseStiffness, true, this));
+            if (PointsAreConnected(v1, v2) == false) linearConstraintsList.Add(new LinearConstraint(v1, v2, inverseStiffness, true, this));
+            if (PointsAreConnected(v2, v0) == false) linearConstraintsList.Add(new LinearConstraint(v2, v0, inverseStiffness, true, this));
+        }
+    }
+    private bool PointsAreConnected(PointMass point0, PointMass point1) {
+        foreach (var constraint in linearConstraintsList) {
+            if (constraint.pointL == point0 && constraint.pointR == point1
+             || constraint.pointL == point1 && constraint.pointR == point0) return true;
+        }
+        return false;
+    }
 
 
 }
