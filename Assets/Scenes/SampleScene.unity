@@ -141,7 +141,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &516154206
 Transform:
   m_ObjectHideFlags: 0
@@ -170,46 +170,46 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pointMassList:
-  - softbody: {fileID: 516154207}
+  - softbody: {fileID: 0}
     id: 0
     position: {x: 0, y: -1}
     previousPosition: {x: 0, y: 0}
     velocity: {x: 0, y: 0}
-  - softbody: {fileID: 516154207}
+  - softbody: {fileID: 0}
     id: 1
     position: {x: -0.866025, y: -0.5}
     previousPosition: {x: 0, y: 0}
     velocity: {x: 0, y: 0}
-  - softbody: {fileID: 516154207}
+  - softbody: {fileID: 0}
     id: 2
     position: {x: 0.866025, y: -0.5}
     previousPosition: {x: 0, y: 0}
     velocity: {x: 0, y: 0}
-  - softbody: {fileID: 516154207}
+  - softbody: {fileID: 0}
     id: 3
     position: {x: 0, y: 1}
     previousPosition: {x: 0, y: 0}
     velocity: {x: 0, y: 0}
-  - softbody: {fileID: 516154207}
+  - softbody: {fileID: 0}
     id: 4
     position: {x: -0.866025, y: 0.5}
     previousPosition: {x: 0, y: 0}
     velocity: {x: 0, y: 0}
-  - softbody: {fileID: 516154207}
+  - softbody: {fileID: 0}
     id: 5
     position: {x: 0.866025, y: 0.5}
     previousPosition: {x: 0, y: 0}
     velocity: {x: 0, y: 0}
   linearConstraintsList:
-  - softbody: {fileID: 516154207}
+  - softbody: {fileID: 0}
     pointL:
-      softbody: {fileID: 516154207}
+      softbody: {fileID: 0}
       id: 0
       position: {x: 0, y: -1}
       previousPosition: {x: 0, y: 0}
       velocity: {x: 0, y: 0}
     pointR:
-      softbody: {fileID: 516154207}
+      softbody: {fileID: 0}
       id: 1
       position: {x: -0.866025, y: -0.5}
       previousPosition: {x: 0, y: 0}
@@ -221,35 +221,15 @@ MonoBehaviour:
     deltaLambda: 0
     volumetric: 1
     tearable: 1
-  - softbody: {fileID: 516154207}
+  - softbody: {fileID: 0}
     pointL:
-      softbody: {fileID: 516154207}
-      id: 1
-      position: {x: -0.866025, y: -0.5}
-      previousPosition: {x: 0, y: 0}
-      velocity: {x: 0, y: 0}
-    pointR:
-      softbody: {fileID: 516154207}
-      id: 2
-      position: {x: 0.866025, y: -0.5}
-      previousPosition: {x: 0, y: 0}
-      velocity: {x: 0, y: 0}
-    defaultDistance: 1.73205
-    inverseStiffness: 0.5
-    weirdA: 1250
-    lambda: 0
-    deltaLambda: 0
-    volumetric: 1
-    tearable: 1
-  - softbody: {fileID: 516154207}
-    pointL:
-      softbody: {fileID: 516154207}
+      softbody: {fileID: 0}
       id: 2
       position: {x: 0.866025, y: -0.5}
       previousPosition: {x: 0, y: 0}
       velocity: {x: 0, y: 0}
     pointR:
-      softbody: {fileID: 516154207}
+      softbody: {fileID: 0}
       id: 0
       position: {x: 0, y: -1}
       previousPosition: {x: 0, y: 0}
@@ -261,55 +241,15 @@ MonoBehaviour:
     deltaLambda: 0
     volumetric: 1
     tearable: 1
-  - softbody: {fileID: 516154207}
+  - softbody: {fileID: 0}
     pointL:
-      softbody: {fileID: 516154207}
-      id: 1
-      position: {x: -0.866025, y: -0.5}
-      previousPosition: {x: 0, y: 0}
-      velocity: {x: 0, y: 0}
-    pointR:
-      softbody: {fileID: 516154207}
-      id: 3
-      position: {x: 0, y: 1}
-      previousPosition: {x: 0, y: 0}
-      velocity: {x: 0, y: 0}
-    defaultDistance: 1.7320505
-    inverseStiffness: 0.5
-    weirdA: 1250
-    lambda: 0
-    deltaLambda: 0
-    volumetric: 1
-    tearable: 1
-  - softbody: {fileID: 516154207}
-    pointL:
-      softbody: {fileID: 516154207}
-      id: 3
-      position: {x: 0, y: 1}
-      previousPosition: {x: 0, y: 0}
-      velocity: {x: 0, y: 0}
-    pointR:
-      softbody: {fileID: 516154207}
-      id: 2
-      position: {x: 0.866025, y: -0.5}
-      previousPosition: {x: 0, y: 0}
-      velocity: {x: 0, y: 0}
-    defaultDistance: 1.7320505
-    inverseStiffness: 0.5
-    weirdA: 1250
-    lambda: 0
-    deltaLambda: 0
-    volumetric: 1
-    tearable: 1
-  - softbody: {fileID: 516154207}
-    pointL:
-      softbody: {fileID: 516154207}
+      softbody: {fileID: 0}
       id: 4
       position: {x: -0.866025, y: 0.5}
       previousPosition: {x: 0, y: 0}
       velocity: {x: 0, y: 0}
     pointR:
-      softbody: {fileID: 516154207}
+      softbody: {fileID: 0}
       id: 3
       position: {x: 0, y: 1}
       previousPosition: {x: 0, y: 0}
@@ -321,15 +261,15 @@ MonoBehaviour:
     deltaLambda: 0
     volumetric: 1
     tearable: 1
-  - softbody: {fileID: 516154207}
+  - softbody: {fileID: 0}
     pointL:
-      softbody: {fileID: 516154207}
+      softbody: {fileID: 0}
       id: 1
       position: {x: -0.866025, y: -0.5}
       previousPosition: {x: 0, y: 0}
       velocity: {x: 0, y: 0}
     pointR:
-      softbody: {fileID: 516154207}
+      softbody: {fileID: 0}
       id: 4
       position: {x: -0.866025, y: 0.5}
       previousPosition: {x: 0, y: 0}
@@ -341,15 +281,15 @@ MonoBehaviour:
     deltaLambda: 0
     volumetric: 1
     tearable: 1
-  - softbody: {fileID: 516154207}
+  - softbody: {fileID: 0}
     pointL:
-      softbody: {fileID: 516154207}
+      softbody: {fileID: 0}
       id: 5
       position: {x: 0.866025, y: 0.5}
       previousPosition: {x: 0, y: 0}
       velocity: {x: 0, y: 0}
     pointR:
-      softbody: {fileID: 516154207}
+      softbody: {fileID: 0}
       id: 2
       position: {x: 0.866025, y: -0.5}
       previousPosition: {x: 0, y: 0}
@@ -361,15 +301,15 @@ MonoBehaviour:
     deltaLambda: 0
     volumetric: 1
     tearable: 1
-  - softbody: {fileID: 516154207}
+  - softbody: {fileID: 0}
     pointL:
-      softbody: {fileID: 516154207}
+      softbody: {fileID: 0}
       id: 3
       position: {x: 0, y: 1}
       previousPosition: {x: 0, y: 0}
       velocity: {x: 0, y: 0}
     pointR:
-      softbody: {fileID: 516154207}
+      softbody: {fileID: 0}
       id: 5
       position: {x: 0.866025, y: 0.5}
       previousPosition: {x: 0, y: 0}
@@ -381,15 +321,15 @@ MonoBehaviour:
     deltaLambda: 0
     volumetric: 1
     tearable: 1
-  mass: 1
+  mass: 33
   inverseStiffness: 0.5
-  forceToTear: 0.2
+  forceToTear: 0.22
   pressure: 1
-  gravity: {x: 0, y: -9.81}
+  gravity: {x: 0, y: -9.8}
   volumeConstraintToUse: 1
   substeps: 10
   iterations: 1
-  softbodyJsonRelativePath: \ObjectsJson\2D\Softbody\Softbody2D.txt
+  softbodyJsonRelativePath: \ObjectsJson\2D\Softbody\Softbody2D.json
   mesh: {fileID: -2432090755550338912, guid: 689758cd52a96bf42be12048153af753, type: 3}
 --- !u!23 &516154208
 MeshRenderer:
@@ -595,7 +535,7 @@ Camera:
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
-  orthographic: 0
+  orthographic: 1
   orthographic size: 5
   m_Depth: -1
   m_CullingMask:
@@ -620,13 +560,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.2588191, y: 0, z: 0, w: 0.9659258}
-  m_LocalPosition: {x: 0, y: 3, z: -5}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 30, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1258675279
 GameObject:
   m_ObjectHideFlags: 0
@@ -645,7 +585,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!64 &1258675280
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -751,7 +691,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1767221148
 Transform:
   m_ObjectHideFlags: 0

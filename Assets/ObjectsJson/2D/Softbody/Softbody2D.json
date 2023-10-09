@@ -1,0 +1,290 @@
+{
+  "pointMassList": [
+    {
+      "id": 0,
+      "position": {
+        "x": 0.0,
+        "y": -1.0,
+        "magnitude": 1.0,
+        "sqrMagnitude": 1.0
+      }
+    },
+    {
+      "id": 1,
+      "position": {
+        "x": -0.866025,
+        "y": -0.5,
+        "normalized": {
+          "x": -0.866025269,
+          "y": -0.5000002,
+          "magnitude": 1.0,
+          "sqrMagnitude": 0.99999994
+        },
+        "magnitude": 0.999999642,
+        "sqrMagnitude": 0.9999992
+      }
+    },
+    {
+      "id": 2,
+      "position": {
+        "x": 0.866025,
+        "y": -0.5,
+        "normalized": {
+          "x": 0.866025269,
+          "y": -0.5000002,
+          "magnitude": 1.0,
+          "sqrMagnitude": 0.99999994
+        },
+        "magnitude": 0.999999642,
+        "sqrMagnitude": 0.9999992
+      }
+    },
+    {
+      "id": 3,
+      "position": {
+        "x": 0.0,
+        "y": 1.0,
+        "magnitude": 1.0,
+        "sqrMagnitude": 1.0
+      }
+    },
+    {
+      "id": 4,
+      "position": {
+        "x": -0.866025,
+        "y": 0.5,
+        "normalized": {
+          "x": -0.866025269,
+          "y": 0.5000002,
+          "magnitude": 1.0,
+          "sqrMagnitude": 0.99999994
+        },
+        "magnitude": 0.999999642,
+        "sqrMagnitude": 0.9999992
+      }
+    },
+    {
+      "id": 5,
+      "position": {
+        "x": 0.866025,
+        "y": 0.5,
+        "normalized": {
+          "x": 0.866025269,
+          "y": 0.5000002,
+          "magnitude": 1.0,
+          "sqrMagnitude": 0.99999994
+        },
+        "magnitude": 0.999999642,
+        "sqrMagnitude": 0.9999992
+      }
+    }
+  ],
+  "linearConstraintsList": [
+    {
+      "pointL": {
+        "id": 0,
+        "position": {
+          "x": 0.0,
+          "y": -1.0,
+          "magnitude": 1.0,
+          "sqrMagnitude": 1.0
+        }
+      },
+      "pointR": {
+        "id": 1,
+        "position": {
+          "x": -0.866025,
+          "y": -0.5,
+          "normalized": {
+            "x": -0.866025269,
+            "y": -0.5000002,
+            "magnitude": 1.0,
+            "sqrMagnitude": 0.99999994
+          },
+          "magnitude": 0.999999642,
+          "sqrMagnitude": 0.9999992
+        }
+      },
+      "inverseStiffness": 0.5,
+      "volumetric": true,
+      "tearable": true
+    },
+    {
+      "pointL": {
+        "id": 2,
+        "position": {
+          "x": 0.866025,
+          "y": -0.5,
+          "normalized": {
+            "x": 0.866025269,
+            "y": -0.5000002,
+            "magnitude": 1.0,
+            "sqrMagnitude": 0.99999994
+          },
+          "magnitude": 0.999999642,
+          "sqrMagnitude": 0.9999992
+        }
+      },
+      "pointR": {
+        "id": 0,
+        "position": {
+          "x": 0.0,
+          "y": -1.0,
+          "magnitude": 1.0,
+          "sqrMagnitude": 1.0
+        }
+      },
+      "inverseStiffness": 0.5,
+      "volumetric": true,
+      "tearable": true
+    },
+    {
+      "pointL": {
+        "id": 4,
+        "position": {
+          "x": -0.866025,
+          "y": 0.5,
+          "normalized": {
+            "x": -0.866025269,
+            "y": 0.5000002,
+            "magnitude": 1.0,
+            "sqrMagnitude": 0.99999994
+          },
+          "magnitude": 0.999999642,
+          "sqrMagnitude": 0.9999992
+        }
+      },
+      "pointR": {
+        "id": 3,
+        "position": {
+          "x": 0.0,
+          "y": 1.0,
+          "magnitude": 1.0,
+          "sqrMagnitude": 1.0
+        }
+      },
+      "inverseStiffness": 0.5,
+      "volumetric": true,
+      "tearable": true
+    },
+    {
+      "pointL": {
+        "id": 1,
+        "position": {
+          "x": -0.866025,
+          "y": -0.5,
+          "normalized": {
+            "x": -0.866025269,
+            "y": -0.5000002,
+            "magnitude": 1.0,
+            "sqrMagnitude": 0.99999994
+          },
+          "magnitude": 0.999999642,
+          "sqrMagnitude": 0.9999992
+        }
+      },
+      "pointR": {
+        "id": 4,
+        "position": {
+          "x": -0.866025,
+          "y": 0.5,
+          "normalized": {
+            "x": -0.866025269,
+            "y": 0.5000002,
+            "magnitude": 1.0,
+            "sqrMagnitude": 0.99999994
+          },
+          "magnitude": 0.999999642,
+          "sqrMagnitude": 0.9999992
+        }
+      },
+      "inverseStiffness": 0.5,
+      "volumetric": true,
+      "tearable": true
+    },
+    {
+      "pointL": {
+        "id": 5,
+        "position": {
+          "x": 0.866025,
+          "y": 0.5,
+          "normalized": {
+            "x": 0.866025269,
+            "y": 0.5000002,
+            "magnitude": 1.0,
+            "sqrMagnitude": 0.99999994
+          },
+          "magnitude": 0.999999642,
+          "sqrMagnitude": 0.9999992
+        }
+      },
+      "pointR": {
+        "id": 2,
+        "position": {
+          "x": 0.866025,
+          "y": -0.5,
+          "normalized": {
+            "x": 0.866025269,
+            "y": -0.5000002,
+            "magnitude": 1.0,
+            "sqrMagnitude": 0.99999994
+          },
+          "magnitude": 0.999999642,
+          "sqrMagnitude": 0.9999992
+        }
+      },
+      "inverseStiffness": 0.5,
+      "volumetric": true,
+      "tearable": true
+    },
+    {
+      "pointL": {
+        "id": 3,
+        "position": {
+          "x": 0.0,
+          "y": 1.0,
+          "magnitude": 1.0,
+          "sqrMagnitude": 1.0
+        }
+      },
+      "pointR": {
+        "id": 5,
+        "position": {
+          "x": 0.866025,
+          "y": 0.5,
+          "normalized": {
+            "x": 0.866025269,
+            "y": 0.5000002,
+            "magnitude": 1.0,
+            "sqrMagnitude": 0.99999994
+          },
+          "magnitude": 0.999999642,
+          "sqrMagnitude": 0.9999992
+        }
+      },
+      "inverseStiffness": 0.5,
+      "volumetric": true,
+      "tearable": true
+    }
+  ],
+  "mass": 33.0,
+  "inverseStiffness": 0.5,
+  "previousInverseStiffness": 0.0,
+  "gravity": {
+    "x": 0.0,
+    "y": -9.8,
+    "normalized": {
+      "x": 0.0,
+      "y": -1.0,
+      "magnitude": 1.0,
+      "sqrMagnitude": 1.0
+    },
+    "magnitude": 9.8,
+    "sqrMagnitude": 96.04
+  },
+  "pressure": 1.0,
+  "forceToTear": 0.22,
+  "torn": false,
+  "substeps": 10,
+  "iterations": 1
+}
