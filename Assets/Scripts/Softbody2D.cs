@@ -47,10 +47,6 @@ public class Softbody2D : MonoBehaviour {
         defasultVolume = GetVolume();
     }
 
-    private void OnDestroy() {
-
-        RelinkPointsInConstraints();
-    }
 
     private void RelinkPointsInConstraints() {
         Debug.Log("Linked properly: " + (linearConstraintsList[0].pointL == linearConstraintsList[1].pointR));
@@ -133,10 +129,12 @@ public class Softbody2D : MonoBehaviour {
 
         float deltaTime = Time.fixedDeltaTime / substeps;
         for (int substep = 0; substep < substeps; substep++) {
-            // Apply gravity
             foreach (PointMass pointMass in pointMassList) {
+                // Moving points
+                pointMass.velocity = (pointMass.position - pointMass.previousPosition) / deltaTime;
                 pointMass.previousPosition = pointMass.position;
 
+                // Apply gravity
                 pointMass.velocity += gravity * deltaTime;
                 pointMass.position += pointMass.velocity * deltaTime;
             }
@@ -188,9 +186,7 @@ public class Softbody2D : MonoBehaviour {
                 }
             }
 
-            // Moving points
             foreach (PointMass pointMass in pointMassList) {
-                pointMass.velocity = (pointMass.position - pointMass.previousPosition) / deltaTime;
 
                 // Friction - I don't get it, don't blame me
                 if (pointMass.position.y < GetFloorY_AtX(pointMass.position.x)) {

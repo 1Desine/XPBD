@@ -17,14 +17,19 @@ public class Rig : MonoBehaviour {
     private List<Point> unserUndefPoints;
 
     private void Awake() {
+        /* does work, but not needed
         Debug.LogWarning("Serialized Defined <i>holder</i>");
         Debug.Log("Count: " + serDefHolder.Count);
         if (serDefHolder[0].p_R == serDefHolder[1].p_L) Pass(); else Fail();
+        */
+
+        if (serUndefHolder[0].p_R.id != null) Debug.Log("p_R info: " + serUndefHolder[0].p_R.id);
 
         Debug.LogWarning("Serialized Undefined <i>holder</i>");
         Debug.Log("Count: " + serUndefHolder.Count);
         if (serUndefHolder[0].p_R == serUndefHolder[1].p_L) Pass(); else Fail();
 
+        /* Full data loss
         Debug.LogWarning("Unserialized Defined <i>holder</i>");
         Debug.Log("Count: " + unserDefHolder.Count);
         if (unserDefHolder[0].p_R == unserDefHolder[1].p_L) Pass(); else Fail();
@@ -32,6 +37,7 @@ public class Rig : MonoBehaviour {
         Debug.LogWarning("Unserialized Undefined <i>holder</i>");
         Debug.Log("Count: " + unserUndefHolder.Count);
         if (unserUndefHolder[0].p_R == unserUndefHolder[1].p_L) Pass(); else Fail();
+        */
     }
 
     private void Pass() => Debug.Log("Result: <b><color=#00ff00ff>Pass</color></b>");
@@ -39,7 +45,7 @@ public class Rig : MonoBehaviour {
 
 
     [Serializable]
-    private class Point { }
+    private class Point { public int? id; }
 
     [Serializable]
     private class Holder {
@@ -84,6 +90,9 @@ public class Rig : MonoBehaviour {
                 rig.unserUndefHolder.Add(new Holder());
                 rig.unserUndefHolder[0].p_R = pointsListToUse[0];
                 rig.unserUndefHolder[1].p_L = pointsListToUse[0];
+
+
+                rig.serUndefHolder[0].p_R.id = 1;
             }
         }
     }
