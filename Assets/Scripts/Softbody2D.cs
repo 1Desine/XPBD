@@ -8,6 +8,7 @@ using System;
 using Unity.VisualScripting;
 using System.Linq;
 using UnityEngine.UIElements;
+using Newtonsoft.Json.Bson;
 
 public class Softbody2D : MonoBehaviour {
 
@@ -42,39 +43,30 @@ public class Softbody2D : MonoBehaviour {
 
 
     private void Awake() {
-        meshFilter = GetComponent<MeshFilter>();
+        RelinkPointsInConstraints();
 
 
-        /*
+
+        defasultVolume = GetVolume();
+    }
+
+    private void RelinkPointsInConstraints() {
+        Debug.Log("Linked properly: " + (linearConstraintsList[0].pointL == linearConstraintsList[1].pointR));
+        // links get themselfs new points, so we link them again
         foreach (LinearConstraint constraint in linearConstraintsList) {
+            constraint.softbody = this;
             foreach (PointMass pointMass in pointMassList) {
+                pointMass.softbody = this;
                 if (constraint.pointL.id == pointMass.id) constraint.pointL = pointMass;
                 if (constraint.pointR.id == pointMass.id) constraint.pointR = pointMass;
             }
             constraint.Setup();
         }
-        */
-
-
-
-        Debug.Log(linearConstraintsList[0].pointL == linearConstraintsList[1].pointR);
-
-        foreach (PointMass pointMass in pointMassList) pointMass.softbody = this;
-        foreach (PointMass pointMass in pointMassList) if (pointMass.softbody == null) Debug.Log("softbody = null");
-
-
-        foreach (LinearConstraint constraint in linearConstraintsList) {
-            //constraint.pointL.softbody = this;
-            //constraint.pointR.softbody = this;
-            constraint.softbody = this;
-            constraint.Setup();
-        }
-
-        defasultVolume = GetVolume();
+        Debug.Log("Linked properly: " + (linearConstraintsList[0].pointL == linearConstraintsList[1].pointR));
     }
+    private void UpdateMesh() {
+        if (meshFilter == null) meshFilter = GetComponent<MeshFilter>();
 
-
-    private void Update() {
         Mesh meshToApply = new Mesh();
         meshToApply.vertices = mesh.vertices;
         meshToApply.triangles = mesh.triangles;
@@ -88,6 +80,10 @@ public class Softbody2D : MonoBehaviour {
         meshToApply.vertices = newVertices;
         meshToApply.uv = newUVs;
         meshFilter.mesh = meshToApply;
+    }
+
+    private void Update() {
+        UpdateMesh();
 
         if (Input.GetMouseButton(0) && linearMouseDragConstraintsList.Count == 0) {
             Vector2 mouseWordPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -395,17 +391,18 @@ public class Softbody2D : MonoBehaviour {
     [CustomEditor(typeof(Softbody2D))]
     public class SoftbodyEditor : Editor {
         public void OnSceneGUI() {
-            Softbody2D softBody = (Softbody2D)target;
+            Softbody2D softbody = (Softbody2D)target;
 
-            List<PointMass> pointMassList = softBody.pointMassList;
-            if (pointMassList != null) {
-                foreach (PointMass point in pointMassList) {
+            if (softbody.pointMassList != null) {
+                foreach (PointMass point in softbody.pointMassList) {
                     EditorGUI.BeginChangeCheck();
                     Vector2 position = Handles.PositionHandle(point.position, Quaternion.identity);
                     if (EditorGUI.EndChangeCheck()) {
                         point.position = position;
                         point.previousPosition = position;
                         point.velocity = Vector2.zero;
+
+                        softbody.UpdateMesh();
                     }
                 }
             }
@@ -487,13 +484,7 @@ public class Softbody2D : MonoBehaviour {
         substeps = data.substeps;
         iterations = data.iterations;
 
-        foreach (LinearConstraint constraint in linearConstraintsList) {
-            foreach (PointMass pointMass in pointMassList) {
-                if (constraint.pointL.id == pointMass.id) constraint.pointL = pointMass;
-                if (constraint.pointR.id == pointMass.id) constraint.pointR = pointMass;
-            }
-            constraint.Setup();
-        }
+        RelinkPointsInConstraints();
     }
 
     private void SetSoftbodyFromMesh() {
@@ -534,6 +525,7 @@ public class Softbody2D : MonoBehaviour {
         }
 
         torn = false;
+        RelinkPointsInConstraints();
     }
     private bool PointsAreConnected(PointMass point0, PointMass point1) {
         foreach (var constraint in linearConstraintsList) {

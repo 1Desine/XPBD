@@ -3,79 +3,91 @@
     {
       "id": 0,
       "position": {
-        "x": 0.0,
-        "y": -1.0,
-        "magnitude": 1.0,
-        "sqrMagnitude": 1.0
+        "x": -0.41636467,
+        "y": -1.92572474,
+        "normalized": {
+          "x": -0.2113288,
+          "y": -0.977415,
+          "magnitude": 1.0,
+          "sqrMagnitude": 1.0
+        },
+        "magnitude": 1.97022212,
+        "sqrMagnitude": 3.88177538
       }
     },
     {
       "id": 1,
       "position": {
-        "x": -0.866025,
-        "y": -0.5,
+        "x": -3.29877234,
+        "y": 0.228444934,
         "normalized": {
-          "x": -0.866025269,
-          "y": -0.5000002,
+          "x": -0.9976107,
+          "y": 0.06908604,
           "magnitude": 1.0,
           "sqrMagnitude": 0.99999994
         },
-        "magnitude": 0.999999642,
-        "sqrMagnitude": 0.9999992
+        "magnitude": 3.306673,
+        "sqrMagnitude": 10.9340858
       }
     },
     {
       "id": 2,
       "position": {
-        "x": 0.866025,
-        "y": -0.5,
+        "x": 2.180096,
+        "y": -1.07358479,
         "normalized": {
-          "x": 0.866025269,
-          "y": -0.5000002,
+          "x": 0.897120655,
+          "y": -0.441785663,
           "magnitude": 1.0,
-          "sqrMagnitude": 0.99999994
+          "sqrMagnitude": 1.0
         },
-        "magnitude": 0.999999642,
-        "sqrMagnitude": 0.9999992
+        "magnitude": 2.4301033,
+        "sqrMagnitude": 5.90540266
       }
     },
     {
       "id": 3,
       "position": {
-        "x": 0.0,
-        "y": 1.0,
-        "magnitude": 1.0,
-        "sqrMagnitude": 1.0
+        "x": 0.315247536,
+        "y": 1.86597323,
+        "normalized": {
+          "x": 0.16658473,
+          "y": 0.9860272,
+          "magnitude": 1.0,
+          "sqrMagnitude": 1.00000012
+        },
+        "magnitude": 1.89241564,
+        "sqrMagnitude": 3.581237
       }
     },
     {
       "id": 4,
       "position": {
-        "x": -0.866025,
-        "y": 0.5,
+        "x": -1.92401612,
+        "y": 1.61160278,
         "normalized": {
-          "x": -0.866025269,
-          "y": 0.5000002,
+          "x": -0.766601,
+          "y": 0.6421237,
           "magnitude": 1.0,
-          "sqrMagnitude": 0.99999994
+          "sqrMagnitude": 1.0
         },
-        "magnitude": 0.999999642,
-        "sqrMagnitude": 0.9999992
+        "magnitude": 2.50980115,
+        "sqrMagnitude": 6.29910135
       }
     },
     {
       "id": 5,
       "position": {
-        "x": 0.866025,
-        "y": 0.5,
+        "x": 3.005949,
+        "y": 0.3857813,
         "normalized": {
-          "x": 0.866025269,
-          "y": 0.5000002,
+          "x": 0.99186486,
+          "y": 0.127295211,
           "magnitude": 1.0,
-          "sqrMagnitude": 0.99999994
+          "sqrMagnitude": 1.0
         },
-        "magnitude": 0.999999642,
-        "sqrMagnitude": 0.9999992
+        "magnitude": 3.03060341,
+        "sqrMagnitude": 9.184557
       }
     }
   ],
@@ -84,25 +96,31 @@
       "pointL": {
         "id": 0,
         "position": {
-          "x": 0.0,
-          "y": -1.0,
-          "magnitude": 1.0,
-          "sqrMagnitude": 1.0
+          "x": -0.41636467,
+          "y": -1.92572474,
+          "normalized": {
+            "x": -0.2113288,
+            "y": -0.977415,
+            "magnitude": 1.0,
+            "sqrMagnitude": 1.0
+          },
+          "magnitude": 1.97022212,
+          "sqrMagnitude": 3.88177538
         }
       },
       "pointR": {
         "id": 1,
         "position": {
-          "x": -0.866025,
-          "y": -0.5,
+          "x": -3.29877234,
+          "y": 0.228444934,
           "normalized": {
-            "x": -0.866025269,
-            "y": -0.5000002,
+            "x": -0.9976107,
+            "y": 0.06908604,
             "magnitude": 1.0,
             "sqrMagnitude": 0.99999994
           },
-          "magnitude": 0.999999642,
-          "sqrMagnitude": 0.9999992
+          "magnitude": 3.306673,
+          "sqrMagnitude": 10.9340858
         }
       },
       "inverseStiffness": 0.5,
@@ -113,25 +131,31 @@
       "pointL": {
         "id": 2,
         "position": {
-          "x": 0.866025,
-          "y": -0.5,
+          "x": 2.180096,
+          "y": -1.07358479,
           "normalized": {
-            "x": 0.866025269,
-            "y": -0.5000002,
+            "x": 0.897120655,
+            "y": -0.441785663,
             "magnitude": 1.0,
-            "sqrMagnitude": 0.99999994
+            "sqrMagnitude": 1.0
           },
-          "magnitude": 0.999999642,
-          "sqrMagnitude": 0.9999992
+          "magnitude": 2.4301033,
+          "sqrMagnitude": 5.90540266
         }
       },
       "pointR": {
         "id": 0,
         "position": {
-          "x": 0.0,
-          "y": -1.0,
-          "magnitude": 1.0,
-          "sqrMagnitude": 1.0
+          "x": -0.41636467,
+          "y": -1.92572474,
+          "normalized": {
+            "x": -0.2113288,
+            "y": -0.977415,
+            "magnitude": 1.0,
+            "sqrMagnitude": 1.0
+          },
+          "magnitude": 1.97022212,
+          "sqrMagnitude": 3.88177538
         }
       },
       "inverseStiffness": 0.5,
@@ -142,25 +166,31 @@
       "pointL": {
         "id": 4,
         "position": {
-          "x": -0.866025,
-          "y": 0.5,
+          "x": -1.92401612,
+          "y": 1.61160278,
           "normalized": {
-            "x": -0.866025269,
-            "y": 0.5000002,
+            "x": -0.766601,
+            "y": 0.6421237,
             "magnitude": 1.0,
-            "sqrMagnitude": 0.99999994
+            "sqrMagnitude": 1.0
           },
-          "magnitude": 0.999999642,
-          "sqrMagnitude": 0.9999992
+          "magnitude": 2.50980115,
+          "sqrMagnitude": 6.29910135
         }
       },
       "pointR": {
         "id": 3,
         "position": {
-          "x": 0.0,
-          "y": 1.0,
-          "magnitude": 1.0,
-          "sqrMagnitude": 1.0
+          "x": 0.315247536,
+          "y": 1.86597323,
+          "normalized": {
+            "x": 0.16658473,
+            "y": 0.9860272,
+            "magnitude": 1.0,
+            "sqrMagnitude": 1.00000012
+          },
+          "magnitude": 1.89241564,
+          "sqrMagnitude": 3.581237
         }
       },
       "inverseStiffness": 0.5,
@@ -171,31 +201,31 @@
       "pointL": {
         "id": 1,
         "position": {
-          "x": -0.866025,
-          "y": -0.5,
+          "x": -3.29877234,
+          "y": 0.228444934,
           "normalized": {
-            "x": -0.866025269,
-            "y": -0.5000002,
+            "x": -0.9976107,
+            "y": 0.06908604,
             "magnitude": 1.0,
             "sqrMagnitude": 0.99999994
           },
-          "magnitude": 0.999999642,
-          "sqrMagnitude": 0.9999992
+          "magnitude": 3.306673,
+          "sqrMagnitude": 10.9340858
         }
       },
       "pointR": {
         "id": 4,
         "position": {
-          "x": -0.866025,
-          "y": 0.5,
+          "x": -1.92401612,
+          "y": 1.61160278,
           "normalized": {
-            "x": -0.866025269,
-            "y": 0.5000002,
+            "x": -0.766601,
+            "y": 0.6421237,
             "magnitude": 1.0,
-            "sqrMagnitude": 0.99999994
+            "sqrMagnitude": 1.0
           },
-          "magnitude": 0.999999642,
-          "sqrMagnitude": 0.9999992
+          "magnitude": 2.50980115,
+          "sqrMagnitude": 6.29910135
         }
       },
       "inverseStiffness": 0.5,
@@ -206,31 +236,31 @@
       "pointL": {
         "id": 5,
         "position": {
-          "x": 0.866025,
-          "y": 0.5,
+          "x": 3.005949,
+          "y": 0.3857813,
           "normalized": {
-            "x": 0.866025269,
-            "y": 0.5000002,
+            "x": 0.99186486,
+            "y": 0.127295211,
             "magnitude": 1.0,
-            "sqrMagnitude": 0.99999994
+            "sqrMagnitude": 1.0
           },
-          "magnitude": 0.999999642,
-          "sqrMagnitude": 0.9999992
+          "magnitude": 3.03060341,
+          "sqrMagnitude": 9.184557
         }
       },
       "pointR": {
         "id": 2,
         "position": {
-          "x": 0.866025,
-          "y": -0.5,
+          "x": 2.180096,
+          "y": -1.07358479,
           "normalized": {
-            "x": 0.866025269,
-            "y": -0.5000002,
+            "x": 0.897120655,
+            "y": -0.441785663,
             "magnitude": 1.0,
-            "sqrMagnitude": 0.99999994
+            "sqrMagnitude": 1.0
           },
-          "magnitude": 0.999999642,
-          "sqrMagnitude": 0.9999992
+          "magnitude": 2.4301033,
+          "sqrMagnitude": 5.90540266
         }
       },
       "inverseStiffness": 0.5,
@@ -241,25 +271,31 @@
       "pointL": {
         "id": 3,
         "position": {
-          "x": 0.0,
-          "y": 1.0,
-          "magnitude": 1.0,
-          "sqrMagnitude": 1.0
+          "x": 0.315247536,
+          "y": 1.86597323,
+          "normalized": {
+            "x": 0.16658473,
+            "y": 0.9860272,
+            "magnitude": 1.0,
+            "sqrMagnitude": 1.00000012
+          },
+          "magnitude": 1.89241564,
+          "sqrMagnitude": 3.581237
         }
       },
       "pointR": {
         "id": 5,
         "position": {
-          "x": 0.866025,
-          "y": 0.5,
+          "x": 3.005949,
+          "y": 0.3857813,
           "normalized": {
-            "x": 0.866025269,
-            "y": 0.5000002,
+            "x": 0.99186486,
+            "y": 0.127295211,
             "magnitude": 1.0,
-            "sqrMagnitude": 0.99999994
+            "sqrMagnitude": 1.0
           },
-          "magnitude": 0.999999642,
-          "sqrMagnitude": 0.9999992
+          "magnitude": 3.03060341,
+          "sqrMagnitude": 9.184557
         }
       },
       "inverseStiffness": 0.5,
