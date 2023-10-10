@@ -44,10 +44,12 @@ public class Softbody2D : MonoBehaviour {
 
     private void Awake() {
         RelinkPointsInConstraints();
-
-
-
         defasultVolume = GetVolume();
+    }
+
+    private void OnDestroy() {
+
+        RelinkPointsInConstraints();
     }
 
     private void RelinkPointsInConstraints() {
@@ -95,6 +97,7 @@ public class Softbody2D : MonoBehaviour {
                 if (angle0 < 0 && angle1 < 0 && angle2 < 0 ||
                     angle0 > 0 && angle1 > 0 && angle2 > 0) {
                     PointMass mousePointMass = new PointMass(mouseWordPosition, -1);
+                    mousePointMass.softbody = this;
                     linearMouseDragConstraintsList.Add(new LinearConstraint(mousePointMass, pointMassList[mesh.triangles[posInTriangles + 0]], 0.5f, false));
                     linearMouseDragConstraintsList.Add(new LinearConstraint(mousePointMass, pointMassList[mesh.triangles[posInTriangles + 1]], 0.5f, false));
                     linearMouseDragConstraintsList.Add(new LinearConstraint(mousePointMass, pointMassList[mesh.triangles[posInTriangles + 2]], 0.5f, false));
@@ -240,16 +243,7 @@ public class Softbody2D : MonoBehaviour {
         public Vector2 position;
         [JsonIgnore] public Vector2 previousPosition;
         [JsonIgnore] public Vector2 velocity;
-        [JsonIgnore]
-        public float mass {
-            get {
-                position += new Vector2(0.1f, 0.3f) * Time.fixedDeltaTime * Time.fixedDeltaTime * Time.fixedDeltaTime;
-                if (softbody == null) Debug.DrawRay(position, new Vector2(1, 0.2f), Color.red);
-                else Debug.DrawRay(position, new Vector2(0.3f, 1), Color.green);
-
-                return 1;
-            }
-        } //softbody.mass / softbody.pointMassList.Count
+        [JsonIgnore] public float mass { get { return softbody.mass / softbody.pointMassList.Count; } }
     }
     ///////////////////
     ///////////////////
@@ -485,6 +479,8 @@ public class Softbody2D : MonoBehaviour {
         iterations = data.iterations;
 
         RelinkPointsInConstraints();
+
+        UpdateMesh();
     }
 
     private void SetSoftbodyFromMesh() {
@@ -512,25 +508,36 @@ public class Softbody2D : MonoBehaviour {
             if (PointsAreConnected(v2, v0) == false) linearConstraintsList.Add(new LinearConstraint(v2, v0, inverseStiffness, true));
         }
 
+        List<LinearConstraint> insideConstraints = new List<LinearConstraint>();
+        insideConstraints.Add(linearConstraintsList.ElementAt(4));
+        insideConstraints.Add(linearConstraintsList.ElementAt(3));
+        insideConstraints.Add(linearConstraintsList.ElementAt(1));
+
         bool removeInsideConstraints = true;
-        if (removeInsideConstraints) {
-            linearConstraintsList.RemoveAt(4);
-            linearConstraintsList.RemoveAt(3);
-            linearConstraintsList.RemoveAt(1);
-        }
-        else {
-            linearConstraintsList[4].volumetric = false;
-            linearConstraintsList[3].volumetric = false;
-            linearConstraintsList[1].volumetric = false;
+        foreach (LinearConstraint insideConstraint in insideConstraints) {
+            if (removeInsideConstraints) {
+                linearConstraintsList.Remove(insideConstraint);
+                linearConstraintsList.Remove(insideConstraint);
+                linearConstraintsList.Remove(insideConstraint);
+            }
+            else
+                foreach (LinearConstraint constraint in linearConstraintsList)
+                    if (constraint == insideConstraint) constraint.volumetric = false;
         }
 
+        mass = 1;
         torn = false;
+
+
         RelinkPointsInConstraints();
+
+        UpdateMesh();
     }
     private bool PointsAreConnected(PointMass point0, PointMass point1) {
         foreach (var constraint in linearConstraintsList) {
             if (constraint.pointL == point0 && constraint.pointR == point1
-             || constraint.pointL == point1 && constraint.pointR == point0) return true;
+             || constraint.pointL == point1 && constraint.pointR == point0)
+                return true;
         }
         return false;
     }
