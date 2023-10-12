@@ -1,0 +1,99 @@
+{
+  "pointList": [
+    {
+      "position": {
+        "x": -1.0,
+        "y": 1.0,
+        "normalized": {
+          "x": -0.707106769,
+          "y": 0.707106769,
+          "magnitude": 1.0,
+          "sqrMagnitude": 0.99999994
+        },
+        "magnitude": 1.41421354,
+        "sqrMagnitude": 2.0
+      }
+    },
+    {
+      "position": {
+        "x": 2.0,
+        "y": 1.0,
+        "normalized": {
+          "x": 0.8944272,
+          "y": 0.4472136,
+          "magnitude": 1.0,
+          "sqrMagnitude": 1.0
+        },
+        "magnitude": 2.236068,
+        "sqrMagnitude": 5.0
+      }
+    },
+    {
+      "position": {
+        "x": 2.0,
+        "y": -1.0,
+        "normalized": {
+          "x": 0.8944272,
+          "y": -0.4472136,
+          "magnitude": 1.0,
+          "sqrMagnitude": 1.0
+        },
+        "magnitude": 2.236068,
+        "sqrMagnitude": 5.0
+      }
+    },
+    {
+      "position": {
+        "x": -1.0,
+        "y": -1.0,
+        "normalized": {
+          "x": -0.707106769,
+          "y": -0.707106769,
+          "magnitude": 1.0,
+          "sqrMagnitude": 0.99999994
+        },
+        "magnitude": 1.41421354,
+        "sqrMagnitude": 2.0
+      }
+    }
+  ],
+  "lineList": [
+    {
+      "leftPointId": 3,
+      "rightPointId": 0,
+      "volumetric": true
+    },
+    {
+      "leftPointId": 0,
+      "rightPointId": 1,
+      "volumetric": true
+    },
+    {
+      "leftPointId": 1,
+      "rightPointId": 2,
+      "volumetric": true
+    },
+    {
+      "leftPointId": 2,
+      "rightPointId": 3,
+      "volumetric": true
+    },
+    {
+      "leftPointId": 0,
+      "rightPointId": 2,
+      "volumetric": false
+    }
+  ],
+  "triangleList": [
+    {
+      "firstPointId": 0,
+      "secondPointId": 1,
+      "thirdPointId": 2
+    },
+    {
+      "firstPointId": 0,
+      "secondPointId": 2,
+      "thirdPointId": 3
+    }
+  ]
+}
