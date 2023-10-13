@@ -131,17 +131,17 @@
     {
       "leftPointId": 1,
       "rightPointId": 5,
-      "volumetric": false
+      "volumetric": true
     },
     {
       "leftPointId": 5,
       "rightPointId": 3,
-      "volumetric": false
+      "volumetric": true
     },
     {
       "leftPointId": 3,
       "rightPointId": 1,
-      "volumetric": false
+      "volumetric": true
     }
   ],
   "triangleList": [

@@ -10,12 +10,12 @@ public class MeshCreator2D : MonoBehaviour {
 
     [Header("settings")]
     [SerializeField] private float gridSize = 0.5f;
-    [SerializeField] private float pointRadius = 0.2f;
-    [SerializeField] private float lineThickness = 0.2f;
+    [SerializeField] private float thickness = 0.2f;
 
     [Header("visual")]
     [SerializeField] private bool showTriangles = true;
     [SerializeField] private bool showNonVolumetric = true;
+    [SerializeField] private bool showGrid = true;
 
     // object properties
     private List<Point> points = new List<Point>();
@@ -35,19 +35,22 @@ public class MeshCreator2D : MonoBehaviour {
     private void Update() {
         /// MOUSE
         Vector2 mouseWordPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector2 mouseWordPositionToGrid = mouseWordPosition - new Vector2(mouseWordPosition.x % gridSize, mouseWordPosition.y % gridSize);
+        Vector2 mouseWordPositionToGrid = mouseWordPosition + new Vector2(
+            mouseWordPosition.x % gridSize < gridSize / 2 ? -mouseWordPosition.x % gridSize : gridSize - mouseWordPosition.x % gridSize,
+            mouseWordPosition.y % gridSize < gridSize / 2 ? -mouseWordPosition.y % gridSize : gridSize - mouseWordPosition.y % gridSize);
+
 
         //right
         if (Input.GetMouseButtonDown(1)) {
             // Delete point
-            for (int i = 0; i < points.Count; i++) if ((points[i].position - mouseWordPosition).magnitude < pointRadius) {
+            for (int i = 0; i < points.Count; i++) if ((points[i].position - mouseWordPosition).magnitude < thickness * gridSize) {
                     points.RemoveAt(i);
                     return;
                 }
 
             // Add point
             bool canPlacePoint = true;
-            for (int i = 0; i < points.Count; i++) if ((points[i].position - mouseWordPositionToGrid).magnitude < pointRadius) canPlacePoint = false;
+            for (int i = 0; i < points.Count; i++) if ((points[i].position - mouseWordPositionToGrid).magnitude < thickness * gridSize) canPlacePoint = false;
             if (canPlacePoint) points.Add(new Point {
                 position = mouseWordPositionToGrid,
             });
@@ -56,7 +59,7 @@ public class MeshCreator2D : MonoBehaviour {
 
         //modle
         if (Input.GetMouseButtonDown(2)) {
-            for (int i = 0; i < points.Count; i++) if ((points[i].position - mouseWordPosition).magnitude < pointRadius) {
+            for (int i = 0; i < points.Count; i++) if ((points[i].position - mouseWordPosition).magnitude < thickness * gridSize) {
                     movingPoint = i;
                     return;
                 }
@@ -67,7 +70,7 @@ public class MeshCreator2D : MonoBehaviour {
                 Vector2 leftPointPosition = points[line.leftPointId].position;
                 Vector2 rightPointPosition = points[line.rightPointId].position;
                 // thickness check
-                if (Math.Abs(Vector2.Dot(Vector2.Perpendicular(leftPointPosition - rightPointPosition).normalized, mouseWordPosition - (leftPointPosition + rightPointPosition) / 2)) < lineThickness) {
+                if (Math.Abs(Vector2.Dot(Vector2.Perpendicular(leftPointPosition - rightPointPosition).normalized, mouseWordPosition - (leftPointPosition + rightPointPosition) / 2)) < thickness * gridSize) {
                     // lenght check
                     if (Vector2.Dot(mouseWordPosition - leftPointPosition, rightPointPosition - leftPointPosition) > 0 &&
                         Vector2.Dot(mouseWordPosition - rightPointPosition, leftPointPosition - rightPointPosition) > 0) {
@@ -87,7 +90,7 @@ public class MeshCreator2D : MonoBehaviour {
         //left
         if (Input.GetMouseButtonDown(0)) {
             // grabbing point that is near enough
-            for (int i = 0; i < points.Count; i++) if ((points[i].position - mouseWordPosition).magnitude < pointRadius) selectedPoint = i;
+            for (int i = 0; i < points.Count; i++) if ((points[i].position - mouseWordPosition).magnitude < thickness * gridSize) selectedPoint = i;
             // if clicked on a point
             if (selectedPoint > -1) return;
 
@@ -97,7 +100,7 @@ public class MeshCreator2D : MonoBehaviour {
                 Vector2 leftPointPosition = points[line.leftPointId].position;
                 Vector2 rightPointPosition = points[line.rightPointId].position;
                 // thickness check
-                if (Math.Abs(Vector2.Dot(Vector2.Perpendicular(leftPointPosition - rightPointPosition).normalized, mouseWordPosition - (leftPointPosition + rightPointPosition) / 2)) < lineThickness) {
+                if (Math.Abs(Vector2.Dot(Vector2.Perpendicular(leftPointPosition - rightPointPosition).normalized, mouseWordPosition - (leftPointPosition + rightPointPosition) / 2)) < thickness * gridSize) {
                     // lenght check
                     if (Vector2.Dot(mouseWordPosition - leftPointPosition, rightPointPosition - leftPointPosition) > 0 &&
                         Vector2.Dot(mouseWordPosition - rightPointPosition, leftPointPosition - rightPointPosition) > 0) {
@@ -117,7 +120,7 @@ public class MeshCreator2D : MonoBehaviour {
         if (Input.GetMouseButtonUp(0)) {
             // connecting two points with a line
             int pointToConnectTo = -1;
-            for (int i = 0; i < points.Count; i++) if ((points[i].position - mouseWordPosition).magnitude < pointRadius) pointToConnectTo = i;
+            for (int i = 0; i < points.Count; i++) if ((points[i].position - mouseWordPosition).magnitude < thickness * gridSize) pointToConnectTo = i;
 
             // cancel new triangle. cause - do and point
             if (selectedPoint == -1) newTrianglePoints.Clear();
@@ -229,7 +232,7 @@ public class MeshCreator2D : MonoBehaviour {
         // points
         foreach (Point point in points) {
             Gizmos.color = Color.green;
-            Gizmos.DrawSphere(point.position, pointRadius);
+            Gizmos.DrawSphere(point.position, thickness * gridSize);
         }
 
         // lines
@@ -242,9 +245,9 @@ public class MeshCreator2D : MonoBehaviour {
                 if (line.rightPointId == i) rightPointPosition = points[i].position;
             }
             if (line.volumetric) {
-                // perpendicular
-                Gizmos.DrawRay((rightPointPosition + leftPointPosition) / 2, Vector2.Perpendicular(rightPointPosition - leftPointPosition).normalized / 2);
-                Gizmos.DrawLine(leftPointPosition, rightPointPosition);
+                Vector2 normalPosition = Vector2.Perpendicular(rightPointPosition - leftPointPosition).normalized * thickness;
+                // lines
+                Gizmos.DrawLine(leftPointPosition + normalPosition, rightPointPosition + normalPosition);
             }
             else if (showNonVolumetric) {
                 Gizmos.color = Color.red;
@@ -265,14 +268,16 @@ public class MeshCreator2D : MonoBehaviour {
         // making triangle
         foreach (int point in newTrianglePoints) {
             Gizmos.color = Color.blue;
-            Gizmos.DrawSphere(points[point].position, pointRadius * 1.1f);
+            Gizmos.DrawSphere(points[point].position, thickness * gridSize * 1.1f);
         }
 
         // grid
-        Gizmos.color = Color.white * 0.5f;
-        int size = 100;
-        //for (int r = -size / 2; r < size / 2; r++) Gizmos.DrawLine(Vector2.right * -size / 2 + Vector2.up * r * gridSize, Vector2.right * size / 2 + Vector2.up * r * gridSize);
-        //for (int c = -size / 2; c < size / 2; c++) Gizmos.DrawLine(Vector2.up * -size / 2 + Vector2.right * c * gridSize, Vector2.up * size / 2 + Vector2.right * c * gridSize);
+        if (showGrid) {
+            Gizmos.color = Color.white * 0.5f;
+            int size = 100;
+            for (int r = -size / 2; r < size / 2; r++) Gizmos.DrawLine(Vector2.right * -size / 2 + Vector2.up * r * gridSize, Vector2.right * size / 2 + Vector2.up * r * gridSize);
+            for (int c = -size / 2; c < size / 2; c++) Gizmos.DrawLine(Vector2.up * -size / 2 + Vector2.right * c * gridSize, Vector2.up * size / 2 + Vector2.right * c * gridSize);
+        }
 
     }
 

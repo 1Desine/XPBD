@@ -1,0 +1,93 @@
+{
+  "pointList": [
+    {
+      "position": {
+        "x": 5.0,
+        "y": 2.0,
+        "normalized": {
+          "x": 0.9284767,
+          "y": 0.371390671,
+          "magnitude": 1.0,
+          "sqrMagnitude": 1.0
+        },
+        "magnitude": 5.38516474,
+        "sqrMagnitude": 29.0
+      }
+    },
+    {
+      "position": {
+        "x": 5.0,
+        "y": -1.0,
+        "normalized": {
+          "x": 0.9805807,
+          "y": -0.196116135,
+          "magnitude": 1.0,
+          "sqrMagnitude": 1.0
+        },
+        "magnitude": 5.09901953,
+        "sqrMagnitude": 26.0
+      }
+    },
+    {
+      "position": {
+        "x": 7.0,
+        "y": 0.0,
+        "normalized": {
+          "x": 1.0,
+          "y": 0.0,
+          "magnitude": 1.0,
+          "sqrMagnitude": 1.0
+        },
+        "magnitude": 7.0,
+        "sqrMagnitude": 49.0
+      }
+    },
+    {
+      "position": {
+        "x": 7.0,
+        "y": 1.0,
+        "normalized": {
+          "x": 0.989949465,
+          "y": 0.141421363,
+          "magnitude": 1.0,
+          "sqrMagnitude": 0.99999994
+        },
+        "magnitude": 7.071068,
+        "sqrMagnitude": 50.0
+      }
+    }
+  ],
+  "lineList": [
+    {
+      "leftPointId": 1,
+      "rightPointId": 0,
+      "volumetric": true
+    },
+    {
+      "leftPointId": 0,
+      "rightPointId": 3,
+      "volumetric": true
+    },
+    {
+      "leftPointId": 3,
+      "rightPointId": 2,
+      "volumetric": true
+    },
+    {
+      "leftPointId": 2,
+      "rightPointId": 1,
+      "volumetric": true
+    },
+    {
+      "leftPointId": 2,
+      "rightPointId": 0,
+      "volumetric": false
+    },
+    {
+      "leftPointId": 3,
+      "rightPointId": 1,
+      "volumetric": false
+    }
+  ],
+  "triangleList": []
+}
