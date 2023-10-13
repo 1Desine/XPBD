@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using UnityEngine;
 using UnityEngine.Experimental.GlobalIllumination;
 
@@ -163,6 +164,13 @@ public class MeshCreator2D : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.L)) {
             LoadMeshFromJson();
         }
+        // Info
+        if (Input.GetKeyDown(KeyCode.I)) {
+            Debug.Log("points.Count: " + points.Count);
+            Debug.Log("lines.Count: " + lines.Count);
+            Debug.Log("triangles.Count:" + triangles.Count);
+        }
+
 
     }
 

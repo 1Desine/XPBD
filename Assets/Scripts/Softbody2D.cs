@@ -43,7 +43,7 @@ public class Softbody2D : MonoBehaviour {
         defasultVolume = GetVolume();
     }
     private void Update() {
-        //UpdateVisualMesh();
+        UpdateVisualMesh();
 
         if (Input.GetMouseButton(0) && linearMouseDragConstraintsList.Count == 0) {
             Vector2 mouseWordPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -58,7 +58,7 @@ public class Softbody2D : MonoBehaviour {
                     mousePointMass.softbody = this;
                     linearMouseDragConstraintsList.Add(new LinearConstraint(mousePointMass, pointMassList[triangleList[triangle].firstPointId], false));
                     linearMouseDragConstraintsList.Add(new LinearConstraint(mousePointMass, pointMassList[triangleList[triangle].secondPointId], false));
-                    linearMouseDragConstraintsList.Add(new LinearConstraint(mousePointMass, pointMassList[triangleList[triangle].thirdPointId], false));
+                    linearMouseDragConstraintsList.Add(new LinearConstraint(mousePointMass, pointMassList[triangleList[triangle].thirdPointId],  false));
                     break;
                 }
             }
@@ -89,6 +89,7 @@ public class Softbody2D : MonoBehaviour {
         // Update visual points positions
         //for (int p = 0; p < pointMassList.Count; p++) pointMassVisualList[p].position = pointMassList[p].position;
     }
+    
     private void FixedUpdate() {
         float deltaTime = Time.fixedDeltaTime / substeps;
         for (int substep = 0; substep < substeps; substep++) {
@@ -168,6 +169,7 @@ public class Softbody2D : MonoBehaviour {
             }
         }
     }
+    
 
     private float GetFloorY_AtX(float xPos) {
         float ratio = -0.2f;
@@ -244,9 +246,7 @@ public class Softbody2D : MonoBehaviour {
         UpdateVisualMesh();
     }
 
-
-    ///////////////////
-    ///////////////////
+    
     private class PointMass {
         public PointMass(Vector2 position, int id) {
             this.position = position;
@@ -261,8 +261,6 @@ public class Softbody2D : MonoBehaviour {
         public Vector2 velocity;
         public float mass { get { return softbody.mass / softbody.pointMassList.Count; } }
     }
-    ///////////////////
-    ///////////////////
     private class LinearConstraint {
         public LinearConstraint(PointMass pointL, PointMass pointR, bool volumetric) {
             this.pointL = pointL;
@@ -355,7 +353,7 @@ public class Softbody2D : MonoBehaviour {
             pointL.position += Mathf.Pow(pointL.mass, -1) * (pointL.position - pointR.position).normalized * deltaLambda;
             pointR.position -= Mathf.Pow(pointR.mass, -1) * (pointL.position - pointR.position).normalized * deltaLambda;
         }
-    }
+    }    
     private class Triangle {
         public int firstPointId;
         public int secondPointId;
@@ -403,6 +401,5 @@ public class Softbody2D : MonoBehaviour {
         }
     }
 #endif
-
 
 }
