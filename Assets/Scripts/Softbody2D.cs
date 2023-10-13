@@ -20,7 +20,7 @@ public class Softbody2D : MonoBehaviour {
     [Header("Properties")]
     [SerializeField, Min(0)] private float mass = 1f;
     [SerializeField, Range(0f, 1f)] private float inverseStiffness = 0.5f;
-    [SerializeField, Range(0.01f, 10f)] private float forceToTear = 0.2f;
+    [SerializeField, Range(0.05f, 10f)] private float forceToTear = 0.2f;
     private bool torn = false;
     [SerializeField, Range(0f, 10f)] private float pressure = 1;
     private float defasultVolume;
@@ -38,7 +38,6 @@ public class Softbody2D : MonoBehaviour {
 
     private void Awake() {
         LoadSoftbodyFromJson();
-        defasultVolume = GetVolume();
     }
     private void Update() {
         UpdateVisualMesh();
@@ -249,17 +248,14 @@ public class Softbody2D : MonoBehaviour {
         public void Solve() {
             if (torn) return;
             ComputeDeltaLambda(); // (18)
+            TearCheck();
             if (volumetric && softbody.torn == false) ComputeVolumeConstraint(); // Volume constraint
             ComputeDeltaDistance(); // (17)
         }
-        public void ComputeDeltaLambda() { // (18)
-            deltaLambda = (-((pointL.position - pointR.position).magnitude - defaultDistance) - weirdA * lambda) /
-                (Mathf.Pow(pointL.mass, -1) + Mathf.Pow(pointR.mass, -1) + weirdA);
-            lambda += deltaLambda;
-
+        public void TearCheck() {
             if (tearable && Mathf.Abs(deltaLambda) > softbody.forceToTear * Time.deltaTime) {
                 torn = true;
-                softbody.torn = true;
+                if (volumetric) softbody.torn = true;
                 foreach (Triangle triangle in softbody.triangleList) {
                     if (pointL.id == triangle.firstPointId || pointL.id == triangle.secondPointId || pointL.id == triangle.thirdPointId
                         && pointR.id == triangle.firstPointId || pointR.id == triangle.secondPointId || pointR.id == triangle.thirdPointId) {
@@ -268,6 +264,11 @@ public class Softbody2D : MonoBehaviour {
                     }
                 }
             }
+        }
+        public void ComputeDeltaLambda() { // (18)
+            deltaLambda = (-((pointL.position - pointR.position).magnitude - defaultDistance) - weirdA * lambda) /
+                (Mathf.Pow(pointL.mass, -1) + Mathf.Pow(pointR.mass, -1) + weirdA);
+            lambda += deltaLambda;
         }
         public void ComputeVolumeConstraint() {
             if (softbody.volumeConstraintToUse == 1) {

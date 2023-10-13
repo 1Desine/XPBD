@@ -274,7 +274,7 @@ MonoBehaviour:
   fileName: car
   mass: 1
   inverseStiffness: 0.05
-  forceToTear: 0.8
+  forceToTear: 0.5
   pressure: 1
   gravity: {x: 0, y: -9.8}
   volumeConstraintToUse: 1

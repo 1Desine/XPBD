@@ -9,8 +9,8 @@ public class MeshCreator2D : MonoBehaviour {
     [SerializeField] private string fileName;
 
     [Header("settings")]
-    [SerializeField] private float gridSize = 0.5f;
-    [SerializeField] private float thickness = 0.2f;
+    [SerializeField, Min(0)] private float gridSize = 0.5f;
+    [SerializeField, Min(0.02f)] private float thickness = 0.2f;
 
     [Header("visual")]
     [SerializeField] private bool showTriangles = true;
@@ -245,7 +245,7 @@ public class MeshCreator2D : MonoBehaviour {
                 if (line.rightPointId == i) rightPointPosition = points[i].position;
             }
             if (line.volumetric) {
-                Vector2 normalPosition = Vector2.Perpendicular(rightPointPosition - leftPointPosition).normalized * thickness;
+                Vector2 normalPosition = Vector2.Perpendicular(rightPointPosition - leftPointPosition).normalized * thickness * gridSize;
                 // lines
                 Gizmos.DrawLine(leftPointPosition + normalPosition, rightPointPosition + normalPosition);
             }
