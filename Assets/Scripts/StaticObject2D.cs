@@ -13,7 +13,7 @@ public class StaticObject2D : MonoBehaviour {
     [SerializeField] private string fileName;
 
     private List<Point> pointList = new List<Point>();
-    private List<Line> lineList = new List<Line>();
+    public List<Line> lineList = new List<Line>();
     private List<Triangle> triangleList = new List<Triangle>();
 
     private MeshFilter meshFilter;
@@ -71,7 +71,7 @@ public class StaticObject2D : MonoBehaviour {
     }
 
 
-    private class Point {
+    public class Point {
         public Point(StaticObject2D softbody, Vector2 position, int id) {
             this.softbody = softbody;
             this.position = position;
@@ -83,7 +83,7 @@ public class StaticObject2D : MonoBehaviour {
         public int id;
         public Vector2 position;
     }
-    private class Line {
+    public class Line {
         public Line(StaticObject2D staticObjec, Point pointL, Point pointR) {
             this.staticObjec= staticObjec;
             this.pointL = pointL;

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using System.Linq;
+using UnityEngine.UIElements;
 
 public class Softbody2D : MonoBehaviour {
     const string SAVES_PATH = "\\ObjectsJson\\2D\\Softbody\\";
@@ -14,8 +15,9 @@ public class Softbody2D : MonoBehaviour {
 
     private List<Point> pointsList = new List<Point>();
     private List<Line> linesList = new List<Line>();
-    private List<Triangle> triangleList = new List<Triangle>();
-    private List<Line> linearMouseDragConstraintsList = new List<Line>();
+    private List<Triangle> trianglesList = new List<Triangle>();
+    private List<Line> mouseLinesList = new List<Line>();
+    private List<Collision> collisionsList = new List<Collision>();
 
     [Header("Properties")]
     [SerializeField, Min(0)] private float mass = 1f;
@@ -33,7 +35,7 @@ public class Softbody2D : MonoBehaviour {
 
 
     [Header("To collide with")]
-    [SerializeField] private List<StaticObject2D> staticObjects = new List<StaticObject2D>();
+    [SerializeField] private List<StaticObject2D> staticObjectsList = new List<StaticObject2D>();
 
 
     private MeshFilter meshFilter;
@@ -46,26 +48,26 @@ public class Softbody2D : MonoBehaviour {
     private void Update() {
         UpdateVisualMesh();
 
-        if (Input.GetMouseButton(0) && linearMouseDragConstraintsList.Count == 0) {
+        if (Input.GetMouseButton(0) && mouseLinesList.Count == 0) {
             Vector2 mouseWordPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             // Trying to find a triangle witch points are around the mouseWorldPosition
-            for (int triangle = 0; triangle < triangleList.Count; triangle++) {
-                float angle0 = Vector2.Dot(Vector2.Perpendicular(pointsList[triangleList[triangle].firstPointId].position - pointsList[triangleList[triangle].thirdPointId].position), mouseWordPosition - pointsList[triangleList[triangle].thirdPointId].position);
-                float angle1 = Vector2.Dot(Vector2.Perpendicular(pointsList[triangleList[triangle].secondPointId].position - pointsList[triangleList[triangle].firstPointId].position), mouseWordPosition - pointsList[triangleList[triangle].firstPointId].position);
-                float angle2 = Vector2.Dot(Vector2.Perpendicular(pointsList[triangleList[triangle].thirdPointId].position - pointsList[triangleList[triangle].secondPointId].position), mouseWordPosition - pointsList[triangleList[triangle].secondPointId].position);
+            for (int triangle = 0; triangle < trianglesList.Count; triangle++) {
+                float angle0 = Vector2.Dot(Vector2.Perpendicular(pointsList[trianglesList[triangle].firstPointId].position - pointsList[trianglesList[triangle].thirdPointId].position), mouseWordPosition - pointsList[trianglesList[triangle].thirdPointId].position);
+                float angle1 = Vector2.Dot(Vector2.Perpendicular(pointsList[trianglesList[triangle].secondPointId].position - pointsList[trianglesList[triangle].firstPointId].position), mouseWordPosition - pointsList[trianglesList[triangle].firstPointId].position);
+                float angle2 = Vector2.Dot(Vector2.Perpendicular(pointsList[trianglesList[triangle].thirdPointId].position - pointsList[trianglesList[triangle].secondPointId].position), mouseWordPosition - pointsList[trianglesList[triangle].secondPointId].position);
                 if (angle0 < 0 && angle1 < 0 && angle2 < 0 ||
                     angle0 > 0 && angle1 > 0 && angle2 > 0) {
                     Point mousePointMass = new Point(this, mouseWordPosition, -1);
                     mousePointMass.softbody = this;
-                    linearMouseDragConstraintsList.Add(new Line(this, mousePointMass, pointsList[triangleList[triangle].firstPointId], false));
-                    linearMouseDragConstraintsList.Add(new Line(this, mousePointMass, pointsList[triangleList[triangle].secondPointId], false));
-                    linearMouseDragConstraintsList.Add(new Line(this, mousePointMass, pointsList[triangleList[triangle].thirdPointId], false));
+                    mouseLinesList.Add(new Line(this, mousePointMass, pointsList[trianglesList[triangle].firstPointId], false));
+                    mouseLinesList.Add(new Line(this, mousePointMass, pointsList[trianglesList[triangle].secondPointId], false));
+                    mouseLinesList.Add(new Line(this, mousePointMass, pointsList[trianglesList[triangle].thirdPointId], false));
                     break;
                 }
             }
-            foreach (Line constraint in linearMouseDragConstraintsList) constraint.tearable = false;
+            foreach (Line constraint in mouseLinesList) constraint.tearable = false;
         }
-        if (Input.GetMouseButtonUp(0)) linearMouseDragConstraintsList.Clear();
+        if (Input.GetMouseButtonUp(0)) mouseLinesList.Clear();
     }
 
     private void FixedUpdate() {
@@ -77,14 +79,47 @@ public class Softbody2D : MonoBehaviour {
                 // Apply gravity
                 pointMass.velocity += gravity * deltaTime;
                 pointMass.position += pointMass.velocity * deltaTime;
+
+                collisionsList.Clear();
+                foreach (StaticObject2D staticObject in staticObjectsList) {
+                    bool isInside = true;
+                    float smallestDistance = float.NegativeInfinity;
+                    Collision collision = new Collision();
+
+                    Vector2 normal = Vector2.zero;
+                    for (int i = 0; i < staticObject.lineList.Count; i++) {
+                        List<Vector2> p = new List<Vector2> {
+                        staticObject.lineList[i].pointL.position,
+                        staticObject.lineList[i].pointR.position};
+
+                        Vector2 lineNormal = Vector2.Perpendicular(p[1] - p[0]);
+                        float cj = Vector2.Dot(pointMass.position - p[0], lineNormal);
+                        if (cj >= 0) {
+                            isInside = false;
+                            break;
+                        }
+
+                        if (smallestDistance < cj) {
+                            collision.point = pointMass.position - cj * lineNormal;
+                            collision.normal = lineNormal;
+                            smallestDistance = cj;
+
+                            normal = lineNormal;
+                        }
+                    }
+                    if (isInside) {
+                        Debug.DrawRay(collision.point, normal);
+                        collision.id = pointMass.id;
+                        collisionsList.Add(collision);
+                    }
+                }
             }
 
             // Reset lambdas
             foreach (Line constraint in linesList) constraint.lambda = 0;
-            foreach (Line constraint in linearMouseDragConstraintsList) constraint.lambda = 0;
+            foreach (Line constraint in mouseLinesList) constraint.lambda = 0;
 
             // Soling
-            //https://www.youtube.com/watch?v=MgmXJnR62uA&ab_channel=blackedout01 11:45
             for (int iteration = 0; iteration < iterations; iteration++) {
                 // bounds
                 foreach (Point pointMass in pointsList) {
@@ -110,10 +145,12 @@ public class Softbody2D : MonoBehaviour {
                     }
                 }
 
+                /// ///////////////foreach (Collision collision in collisionsList) collision.
+
                 // constraints
                 foreach (Line constraint in linesList) constraint.Solve();
                 // mouse dragging
-                foreach (Line constraint in linearMouseDragConstraintsList) {
+                foreach (Line constraint in mouseLinesList) {
                     constraint.pointL.position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                     constraint.pointL.velocity = Vector2.zero;
                     constraint.Solve();
@@ -169,7 +206,7 @@ public class Softbody2D : MonoBehaviour {
             vertices.Add(pointMass.position - (Vector2)transform.position);
         }
         List<int> triangles = new List<int>();
-        foreach (Triangle triangle in triangleList) {
+        foreach (Triangle triangle in trianglesList) {
             triangles.Add(triangle.firstPointId);
             triangles.Add(triangle.secondPointId);
             triangles.Add(triangle.thirdPointId);
@@ -190,7 +227,7 @@ public class Softbody2D : MonoBehaviour {
 
         pointsList.Clear();
         linesList.Clear();
-        triangleList.Clear();
+        trianglesList.Clear();
 
         foreach (MeshCreator2D.Point point in data.pointList) {
             pointsList.Add(new Point(this, point.position + (Vector2)transform.position, pointsList.Count));
@@ -199,7 +236,7 @@ public class Softbody2D : MonoBehaviour {
             linesList.Add(new Line(this, pointsList[line.leftPointId], pointsList[line.rightPointId], line.volumetric));
         }
         foreach (MeshCreator2D.Triangle triangle in data.triangleList) {
-            triangleList.Add(new Triangle {
+            trianglesList.Add(new Triangle {
                 firstPointId = triangle.firstPointId,
                 secondPointId = triangle.secondPointId,
                 thirdPointId = triangle.thirdPointId,
@@ -249,31 +286,32 @@ public class Softbody2D : MonoBehaviour {
         public bool tearable = true;
         public bool torn = false;
 
+        //https://www.youtube.com/watch?v=MgmXJnR62uA&ab_channel=blackedout01 11:45
         public void Solve() {
-            ComputeDeltaLambda(); // (18)
-            ComputeVolumeConstraint(); // Volume constraint
+            LinearConstraint(); // (18)
+            VolumeConstraint(); // Volume constraint
+            ApplyResultOfCalculations(); // (17)
             TearCheck();
-            ComputeDeltaDistance(); // (17)
         }
         public void TearCheck() {
             if (tearable && Mathf.Abs(deltaLambda) > softbody.forceToTear * Time.deltaTime) {
                 torn = true;
                 if (volumetric) softbody.torn = true;
-                foreach (Triangle triangle in softbody.triangleList) {
+                foreach (Triangle triangle in softbody.trianglesList) {
                     if (pointL.id == triangle.firstPointId || pointL.id == triangle.secondPointId || pointL.id == triangle.thirdPointId
                         && pointR.id == triangle.firstPointId || pointR.id == triangle.secondPointId || pointR.id == triangle.thirdPointId) {
-                        softbody.triangleList.Remove(triangle);
+                        softbody.trianglesList.Remove(triangle);
                         break;
                     }
                 }
             }
         }
-        public void ComputeDeltaLambda() { // (18)
+        public void LinearConstraint() { // (18)
             deltaLambda = (-((pointL.position - pointR.position).magnitude - defaultDistance) - weirdA * lambda) /
                 (Mathf.Pow(pointL.mass, -1) + Mathf.Pow(pointR.mass, -1) + weirdA);
             lambda += deltaLambda;
         }
-        public void ComputeVolumeConstraint() {
+        public void VolumeConstraint() {
             if (volumetric == false || softbody.torn == true) return;
 
             if (softbody.volumeConstraintToUse == 1) {
@@ -324,7 +362,7 @@ public class Softbody2D : MonoBehaviour {
                 pointR.position += forceToConstraint * Time.fixedDeltaTime;
             }
         }
-        public void ComputeDeltaDistance() { // (17)
+        public void ApplyResultOfCalculations() { // (17)
             if (torn) return;
             pointR.position -= Mathf.Pow(pointR.mass, -1) * (pointL.position - pointR.position).normalized * deltaLambda;
             pointL.position += Mathf.Pow(pointL.mass, -1) * (pointL.position - pointR.position).normalized * deltaLambda;
@@ -334,6 +372,32 @@ public class Softbody2D : MonoBehaviour {
         public int firstPointId;
         public int secondPointId;
         public int thirdPointId;
+    }
+    private class Collision {
+        public int id;
+        public Vector2 point;
+        public Vector2 normal;
+        public float lambdaN;
+        public float lambdaT;
+
+        /*
+        public void CollisionConstraint() {
+            Vector2 p1;// contact point
+            Vector2 normal;// = normal of collision plane
+            float w = Mathf.Pow(mass, -1);// p0 inverse mass
+
+
+            Vector2 p0 = position;
+            float cj = Vector2.Dot(position - p1, normal);
+            if (cj < 0) {
+                float deltaLambdaN = -cj / w;
+                Vector2 deltaX = -cj / w;
+                LambdaN += deltaLambdaN;
+
+                position += deltaX;
+            }
+        }
+        */
     }
 
 
