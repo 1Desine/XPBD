@@ -1,0 +1,100 @@
+{
+  "pointList": [
+    {
+      "position": {
+        "x": -8.0,
+        "y": 1.25,
+        "normalized": {
+          "x": -0.988011956,
+          "y": 0.154376864,
+          "normalized": {
+            "x": -0.988012,
+            "y": 0.154376879,
+            "magnitude": 1.0,
+            "sqrMagnitude": 0.99999994
+          },
+          "magnitude": 0.99999994,
+          "sqrMagnitude": 0.9999998
+        },
+        "magnitude": 8.097068,
+        "sqrMagnitude": 65.5625
+      }
+    },
+    {
+      "position": {
+        "x": 8.0,
+        "y": 0.25,
+        "normalized": {
+          "x": 0.9995121,
+          "y": 0.0312347524,
+          "magnitude": 1.0,
+          "sqrMagnitude": 1.0
+        },
+        "magnitude": 8.003905,
+        "sqrMagnitude": 64.0625
+      }
+    },
+    {
+      "position": {
+        "x": 8.0,
+        "y": -0.75,
+        "normalized": {
+          "x": 0.995634258,
+          "y": -0.09334071,
+          "magnitude": 1.0,
+          "sqrMagnitude": 1.00000012
+        },
+        "magnitude": 8.035079,
+        "sqrMagnitude": 64.5625
+      }
+    },
+    {
+      "position": {
+        "x": -8.0,
+        "y": -0.75,
+        "normalized": {
+          "x": -0.995634258,
+          "y": -0.09334071,
+          "magnitude": 1.0,
+          "sqrMagnitude": 1.00000012
+        },
+        "magnitude": 8.035079,
+        "sqrMagnitude": 64.5625
+      }
+    }
+  ],
+  "lineList": [
+    {
+      "leftPointId": 3,
+      "rightPointId": 0,
+      "volumetric": true
+    },
+    {
+      "leftPointId": 0,
+      "rightPointId": 1,
+      "volumetric": true
+    },
+    {
+      "leftPointId": 1,
+      "rightPointId": 2,
+      "volumetric": true
+    },
+    {
+      "leftPointId": 2,
+      "rightPointId": 3,
+      "volumetric": true
+    }
+  ],
+  "triangleList": [
+    {
+      "firstPointId": 3,
+      "secondPointId": 0,
+      "thirdPointId": 2
+    },
+    {
+      "firstPointId": 2,
+      "secondPointId": 0,
+      "thirdPointId": 1
+    }
+  ]
+}

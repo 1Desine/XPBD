@@ -12,10 +12,10 @@ public class Softbody2D : MonoBehaviour {
     [SerializeField] private string fileName;
 
 
-    private List<PointMass> pointMassList = new List<PointMass>();
-    private List<LinearConstraint> linearConstraintList = new List<LinearConstraint>();
+    private List<Point> pointsList = new List<Point>();
+    private List<Line> linesList = new List<Line>();
     private List<Triangle> triangleList = new List<Triangle>();
-    private List<LinearConstraint> linearMouseDragConstraintsList = new List<LinearConstraint>();
+    private List<Line> linearMouseDragConstraintsList = new List<Line>();
 
     [Header("Properties")]
     [SerializeField, Min(0)] private float mass = 1f;
@@ -32,6 +32,10 @@ public class Softbody2D : MonoBehaviour {
     [SerializeField, Min(1)] private uint iterations = 1; // of solving the constraints per substep
 
 
+    [Header("To collide with")]
+    [SerializeField] private List<StaticObject2D> staticObjects = new List<StaticObject2D>();
+
+
     private MeshFilter meshFilter;
 
 
@@ -46,20 +50,20 @@ public class Softbody2D : MonoBehaviour {
             Vector2 mouseWordPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             // Trying to find a triangle witch points are around the mouseWorldPosition
             for (int triangle = 0; triangle < triangleList.Count; triangle++) {
-                float angle0 = Vector2.Dot(Vector2.Perpendicular(pointMassList[triangleList[triangle].firstPointId].position - pointMassList[triangleList[triangle].thirdPointId].position), mouseWordPosition - pointMassList[triangleList[triangle].thirdPointId].position);
-                float angle1 = Vector2.Dot(Vector2.Perpendicular(pointMassList[triangleList[triangle].secondPointId].position - pointMassList[triangleList[triangle].firstPointId].position), mouseWordPosition - pointMassList[triangleList[triangle].firstPointId].position);
-                float angle2 = Vector2.Dot(Vector2.Perpendicular(pointMassList[triangleList[triangle].thirdPointId].position - pointMassList[triangleList[triangle].secondPointId].position), mouseWordPosition - pointMassList[triangleList[triangle].secondPointId].position);
+                float angle0 = Vector2.Dot(Vector2.Perpendicular(pointsList[triangleList[triangle].firstPointId].position - pointsList[triangleList[triangle].thirdPointId].position), mouseWordPosition - pointsList[triangleList[triangle].thirdPointId].position);
+                float angle1 = Vector2.Dot(Vector2.Perpendicular(pointsList[triangleList[triangle].secondPointId].position - pointsList[triangleList[triangle].firstPointId].position), mouseWordPosition - pointsList[triangleList[triangle].firstPointId].position);
+                float angle2 = Vector2.Dot(Vector2.Perpendicular(pointsList[triangleList[triangle].thirdPointId].position - pointsList[triangleList[triangle].secondPointId].position), mouseWordPosition - pointsList[triangleList[triangle].secondPointId].position);
                 if (angle0 < 0 && angle1 < 0 && angle2 < 0 ||
                     angle0 > 0 && angle1 > 0 && angle2 > 0) {
-                    PointMass mousePointMass = new PointMass(this, mouseWordPosition, -1);
+                    Point mousePointMass = new Point(this, mouseWordPosition, -1);
                     mousePointMass.softbody = this;
-                    linearMouseDragConstraintsList.Add(new LinearConstraint(this, mousePointMass, pointMassList[triangleList[triangle].firstPointId], false));
-                    linearMouseDragConstraintsList.Add(new LinearConstraint(this, mousePointMass, pointMassList[triangleList[triangle].secondPointId], false));
-                    linearMouseDragConstraintsList.Add(new LinearConstraint(this, mousePointMass, pointMassList[triangleList[triangle].thirdPointId], false));
+                    linearMouseDragConstraintsList.Add(new Line(this, mousePointMass, pointsList[triangleList[triangle].firstPointId], false));
+                    linearMouseDragConstraintsList.Add(new Line(this, mousePointMass, pointsList[triangleList[triangle].secondPointId], false));
+                    linearMouseDragConstraintsList.Add(new Line(this, mousePointMass, pointsList[triangleList[triangle].thirdPointId], false));
                     break;
                 }
             }
-            foreach (LinearConstraint constraint in linearMouseDragConstraintsList) constraint.tearable = false;
+            foreach (Line constraint in linearMouseDragConstraintsList) constraint.tearable = false;
         }
         if (Input.GetMouseButtonUp(0)) linearMouseDragConstraintsList.Clear();
     }
@@ -67,7 +71,7 @@ public class Softbody2D : MonoBehaviour {
     private void FixedUpdate() {
         float deltaTime = Time.fixedDeltaTime / substeps;
         for (int substep = 0; substep < substeps; substep++) {
-            foreach (PointMass pointMass in pointMassList) {
+            foreach (Point pointMass in pointsList) {
                 pointMass.previousPosition = pointMass.position;
 
                 // Apply gravity
@@ -76,14 +80,14 @@ public class Softbody2D : MonoBehaviour {
             }
 
             // Reset lambdas
-            foreach (LinearConstraint constraint in linearConstraintList) constraint.lambda = 0;
-            foreach (LinearConstraint constraint in linearMouseDragConstraintsList) constraint.lambda = 0;
+            foreach (Line constraint in linesList) constraint.lambda = 0;
+            foreach (Line constraint in linearMouseDragConstraintsList) constraint.lambda = 0;
 
             // Soling
             //https://www.youtube.com/watch?v=MgmXJnR62uA&ab_channel=blackedout01 11:45
             for (int iteration = 0; iteration < iterations; iteration++) {
                 // bounds
-                foreach (PointMass pointMass in pointMassList) {
+                foreach (Point pointMass in pointsList) {
                     // floor
                     if (pointMass.position.y < GetFloorY_AtX(pointMass.position.x)) {
                         pointMass.position.y = GetFloorY_AtX(pointMass.position.x);
@@ -107,16 +111,16 @@ public class Softbody2D : MonoBehaviour {
                 }
 
                 // constraints
-                foreach (LinearConstraint constraint in linearConstraintList) constraint.Solve();
+                foreach (Line constraint in linesList) constraint.Solve();
                 // mouse dragging
-                foreach (LinearConstraint constraint in linearMouseDragConstraintsList) {
+                foreach (Line constraint in linearMouseDragConstraintsList) {
                     constraint.pointL.position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                     constraint.pointL.velocity = Vector2.zero;
                     constraint.Solve();
                 }
             }
 
-            foreach (PointMass pointMass in pointMassList) {
+            foreach (Point pointMass in pointsList) {
                 // Moving points
                 pointMass.velocity = (pointMass.position - pointMass.previousPosition) / deltaTime;
 
@@ -145,12 +149,12 @@ public class Softbody2D : MonoBehaviour {
     }
     public float GetVolume() {
         float volume = 0.0f;
-        for (int i = 0; i < linearConstraintList.Count; i++) {
-            if (linearConstraintList[i].volumetric == false) continue;
-            float p0x = linearConstraintList[i].pointL.position.x;
-            float p0y = linearConstraintList[i].pointL.position.y;
-            float p1x = linearConstraintList[i].pointR.position.x;
-            float p1y = linearConstraintList[i].pointR.position.y;
+        for (int i = 0; i < linesList.Count; i++) {
+            if (linesList[i].volumetric == false) continue;
+            float p0x = linesList[i].pointL.position.x;
+            float p0y = linesList[i].pointL.position.y;
+            float p1x = linesList[i].pointR.position.x;
+            float p1y = linesList[i].pointR.position.y;
 
             volume += (p1x * p0y - p0x * p1y) / 2f;
         }
@@ -161,8 +165,8 @@ public class Softbody2D : MonoBehaviour {
         if (meshFilter == null) meshFilter = GetComponent<MeshFilter>();
 
         List<Vector3> vertices = new List<Vector3>();
-        foreach (PointMass pointMass in pointMassList) {
-            vertices.Add(pointMass.position);
+        foreach (Point pointMass in pointsList) {
+            vertices.Add(pointMass.position - (Vector2)transform.position);
         }
         List<int> triangles = new List<int>();
         foreach (Triangle triangle in triangleList) {
@@ -184,15 +188,15 @@ public class Softbody2D : MonoBehaviour {
     private void LoadSoftbodyFromJson() {
         MeshCreator2D.Softbody2DJsonObject data = SaveSystem.DeserializeJson<MeshCreator2D.Softbody2DJsonObject>(SaveSystem.ReadJson(SAVES_PATH + fileName + ".json"));
 
-        pointMassList.Clear();
-        linearConstraintList.Clear();
+        pointsList.Clear();
+        linesList.Clear();
         triangleList.Clear();
 
         foreach (MeshCreator2D.Point point in data.pointList) {
-            pointMassList.Add(new PointMass(this, point.position, pointMassList.Count));
+            pointsList.Add(new Point(this, point.position + (Vector2)transform.position, pointsList.Count));
         }
         foreach (MeshCreator2D.Line line in data.lineList) {
-            linearConstraintList.Add(new LinearConstraint(this, pointMassList[line.leftPointId], pointMassList[line.rightPointId], line.volumetric));
+            linesList.Add(new Line(this, pointsList[line.leftPointId], pointsList[line.rightPointId], line.volumetric));
         }
         foreach (MeshCreator2D.Triangle triangle in data.triangleList) {
             triangleList.Add(new Triangle {
@@ -208,8 +212,8 @@ public class Softbody2D : MonoBehaviour {
     }
 
 
-    private class PointMass {
-        public PointMass(Softbody2D softbody, Vector2 position, int id) {
+    private class Point {
+        public Point(Softbody2D softbody, Vector2 position, int id) {
             this.softbody = softbody;
             this.position = position;
             this.id = id;
@@ -221,10 +225,10 @@ public class Softbody2D : MonoBehaviour {
         public Vector2 position;
         public Vector2 previousPosition;
         public Vector2 velocity;
-        public float mass { get { return softbody.mass / softbody.pointMassList.Count; } }
+        public float mass { get { return softbody.mass / softbody.pointsList.Count; } }
     }
-    private class LinearConstraint {
-        public LinearConstraint(Softbody2D softbody, PointMass pointL, PointMass pointR, bool volumetric) {
+    private class Line {
+        public Line(Softbody2D softbody, Point pointL, Point pointR, bool volumetric) {
             this.softbody = softbody;
             this.pointL = pointL;
             this.pointR = pointR;
@@ -234,8 +238,8 @@ public class Softbody2D : MonoBehaviour {
 
         public Softbody2D softbody;
 
-        public PointMass pointL;
-        public PointMass pointR;
+        public Point pointL;
+        public Point pointR;
         public float defaultDistance;
         public float inverseStiffness { get { return softbody.inverseStiffness; } }
         public float weirdA { get { return inverseStiffness / Time.fixedDeltaTime / Time.fixedDeltaTime; } }
@@ -246,10 +250,9 @@ public class Softbody2D : MonoBehaviour {
         public bool torn = false;
 
         public void Solve() {
-            if (torn) return;
             ComputeDeltaLambda(); // (18)
+            ComputeVolumeConstraint(); // Volume constraint
             TearCheck();
-            if (volumetric && softbody.torn == false) ComputeVolumeConstraint(); // Volume constraint
             ComputeDeltaDistance(); // (17)
         }
         public void TearCheck() {
@@ -271,30 +274,32 @@ public class Softbody2D : MonoBehaviour {
             lambda += deltaLambda;
         }
         public void ComputeVolumeConstraint() {
+            if (volumetric == false || softbody.torn == true) return;
+
             if (softbody.volumeConstraintToUse == 1) {
                 float desiredPressure = softbody.GetVolume() - softbody.defasultVolume * softbody.pressure;
 
-                List<Vector2> Jj = new List<Vector2>(new Vector2[softbody.pointMassList.Count]);
+                List<Vector2> Jj = new List<Vector2>(new Vector2[softbody.pointsList.Count]);
 
-                for (int j = 0; j < softbody.linearConstraintList.Count; j++) {
-                    if (softbody.linearConstraintList[j].volumetric == false) continue;
-                    if (softbody.linearConstraintList[j].torn == true) continue;
-                    Jj[softbody.linearConstraintList[j].pointL.id] += Vector2.Perpendicular(softbody.linearConstraintList[j].pointR.position - softbody.linearConstraintList[j].pointL.position);
-                    Jj[softbody.linearConstraintList[j].pointR.id] += Vector2.Perpendicular(softbody.linearConstraintList[j].pointR.position - softbody.linearConstraintList[j].pointL.position);
+                for (int j = 0; j < softbody.linesList.Count; j++) {
+                    if (softbody.linesList[j].volumetric == false) continue;
+                    if (softbody.linesList[j].torn == true) continue;
+                    Jj[softbody.linesList[j].pointL.id] += Vector2.Perpendicular(softbody.linesList[j].pointR.position - softbody.linesList[j].pointL.position);
+                    Jj[softbody.linesList[j].pointR.id] += Vector2.Perpendicular(softbody.linesList[j].pointR.position - softbody.linesList[j].pointL.position);
                 }
 
-                for (int j = 0; j < softbody.pointMassList.Count; j++) {
-                    Debug.DrawRay(softbody.pointMassList[j].position, Jj[j] * desiredPressure, Color.red);
+                for (int j = 0; j < softbody.pointsList.Count; j++) {
+                    Debug.DrawRay(softbody.pointsList[j].position, Jj[j] * desiredPressure, Color.red);
                 }
                 float Denom = weirdA;
-                for (int i = 0; i < softbody.pointMassList.Count; i++) {
-                    Denom += Mathf.Pow(softbody.pointMassList[i].mass, -1) * Vector2.Dot(Jj[i], Jj[i]);
+                for (int i = 0; i < softbody.pointsList.Count; i++) {
+                    Denom += Mathf.Pow(softbody.pointsList[i].mass, -1) * Vector2.Dot(Jj[i], Jj[i]);
                 }
 
                 float volumeDeviation = (-desiredPressure - weirdA * lambda) / Denom;
 
-                for (int i = 0; i < softbody.pointMassList.Count; i++) {
-                    softbody.pointMassList[i].position += volumeDeviation * Mathf.Pow(softbody.pointMassList[i].mass, -1) * Jj[i];
+                for (int i = 0; i < softbody.pointsList.Count; i++) {
+                    softbody.pointsList[i].position += volumeDeviation * Mathf.Pow(softbody.pointsList[i].mass, -1) * Jj[i];
                 }
 
                 lambda += volumeDeviation;
@@ -305,7 +310,7 @@ public class Softbody2D : MonoBehaviour {
                 float desiredPressure = softbody.GetVolume() - softbody.defasultVolume * softbody.pressure;
 
                 float lenghOfAllConstraints = 0f;
-                foreach (var constraint in softbody.linearConstraintList) {
+                foreach (var constraint in softbody.linesList) {
                     if (volumetric == false) continue;
                     lenghOfAllConstraints += (constraint.pointL.position - constraint.pointR.position).magnitude;
                 }
@@ -320,8 +325,9 @@ public class Softbody2D : MonoBehaviour {
             }
         }
         public void ComputeDeltaDistance() { // (17)
-            pointL.position += Mathf.Pow(pointL.mass, -1) * (pointL.position - pointR.position).normalized * deltaLambda;
+            if (torn) return;
             pointR.position -= Mathf.Pow(pointR.mass, -1) * (pointL.position - pointR.position).normalized * deltaLambda;
+            pointL.position += Mathf.Pow(pointL.mass, -1) * (pointL.position - pointR.position).normalized * deltaLambda;
         }
     }
     private class Triangle {
@@ -342,12 +348,12 @@ public class Softbody2D : MonoBehaviour {
     private void OnDrawGizmos() {
         Gizmos.color = Color.green;
 
-        foreach (PointMass point in pointMassList) {
+        foreach (Point point in pointsList) {
             Gizmos.color = Color.green;
             Gizmos.DrawSphere(point.position, 0.05f);
         }
 
-        foreach (LinearConstraint constraint in linearConstraintList) {
+        foreach (Line constraint in linesList) {
             if (constraint.torn) continue;
             // LinearConstraints
             Gizmos.color = Color.green;
@@ -358,9 +364,6 @@ public class Softbody2D : MonoBehaviour {
         }
         //floor formula y = x * angle
         Debug.DrawLine(new Vector2(-5, GetFloorY_AtX(-5)), new Vector2(5, GetFloorY_AtX(5)), Color.black);
-        // Update visual points positions
-        //for (int p = 0; p < pointMassList.Count; p++) pointMassVisualList[p].position = pointMassList[p].position;
-
     }
 
 
@@ -373,6 +376,35 @@ public class Softbody2D : MonoBehaviour {
 
             if (GUILayout.Button("Reset")) {
                 softbody.LoadSoftbodyFromJson();
+            }
+
+
+            float angle = softbody.transform.eulerAngles.z * 3.14f / 180f;
+
+            if (angle != 0) {
+                Vector2 pivotPoint = Vector2.zero;
+                foreach (Point pointMass in softbody.pointsList) pivotPoint += pointMass.position;
+                pivotPoint /= softbody.pointsList.Count;
+
+                float s = Mathf.Sin(angle);
+                float c = Mathf.Cos(angle);
+                foreach (Point pointMass in softbody.pointsList) {
+                    pointMass.position -= pivotPoint;
+                    pointMass.position = new Vector2(
+                        c * pointMass.position.x + s * pointMass.position.y,
+                        -s * pointMass.position.x + c * pointMass.position.y);
+                    pointMass.position += pivotPoint;
+
+
+                    pointMass.previousPosition -= pivotPoint;
+                    pointMass.previousPosition = new Vector2(
+                        c * pointMass.previousPosition.x + s * pointMass.previousPosition.y,
+                        -s * pointMass.previousPosition.x + c * pointMass.previousPosition.y);
+                    pointMass.previousPosition += pivotPoint;
+
+                    softbody.UpdateVisualMesh();
+                }
+                softbody.transform.eulerAngles = Vector3.zero;
             }
         }
     }

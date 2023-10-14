@@ -180,6 +180,20 @@ public class MeshCreator2D : MonoBehaviour {
 
 
     private void SaveMeshToJson() {
+        if (points.Count == 0) {
+            Debug.LogWarning("me. Try to save mesh with no points");
+            return;
+        }
+
+        Vector2 offset = Vector2.zero;
+        foreach (Point point in points) {
+            offset += point.position;
+        }
+        offset /= points.Count;
+
+        foreach (Point point in points) point.position -= offset;
+
+
         SaveSystem.WriteJson(SAVES_PATH + fileName + ".json", SaveSystem.SerializeJson(new Softbody2DJsonObject {
             pointList = points,
             lineList = lines,
