@@ -56,7 +56,7 @@ public class StaticObject2D : MonoBehaviour {
         foreach (MeshCreator2D.Point point in data.pointList) {
             pointList.Add(new Point(this, point.position + (Vector2)transform.position, pointList.Count));
         }
-        foreach (MeshCreator2D.Line line in data.lineList) {
+        foreach (MeshCreator2D.Line line in data.linesSurfaceList) {
             lineList.Add(new Line(this, pointList[line.leftPointId], pointList[line.rightPointId]));
         }
         foreach (MeshCreator2D.Triangle triangle in data.triangleList) {

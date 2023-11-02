@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Experimental.GlobalIllumination;
 
@@ -35,9 +36,9 @@ public class MeshCreator2D : MonoBehaviour {
     private void Update() {
         /// MOUSE
         Vector2 mouseWordPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector2 mouseWordPositionToGrid = mouseWordPosition + new Vector2(
-            mouseWordPosition.x % gridSize < gridSize / 2 ? -mouseWordPosition.x % gridSize : gridSize - mouseWordPosition.x % gridSize,
-            mouseWordPosition.y % gridSize < gridSize / 2 ? -mouseWordPosition.y % gridSize : gridSize - mouseWordPosition.y % gridSize);
+        Vector2 mouseWordPositionToGrid = new Vector2(
+            Mathf.RoundToInt(mouseWordPosition.x / gridSize) * gridSize,
+            Mathf.RoundToInt(mouseWordPosition.y / gridSize) * gridSize);
 
 
         //right
@@ -139,10 +140,11 @@ public class MeshCreator2D : MonoBehaviour {
             }
             // connect points with line
             else if (pointToConnectTo > -1 && selectedPoint > -1) {
-                lines.Add(new Line {
-                    leftPointId = selectedPoint,
-                    rightPointId = pointToConnectTo,
-                });
+                if (IsLineExists(points[selectedPoint], points[pointToConnectTo]) == false)
+                    lines.Add(new Line {
+                        leftPointId = selectedPoint,
+                        rightPointId = pointToConnectTo,
+                    });
 
                 // cancel triangle creation
                 newTrianglePoints.Clear();
@@ -173,10 +175,17 @@ public class MeshCreator2D : MonoBehaviour {
             Debug.Log("lines.Count: " + lines.Count);
             Debug.Log("triangles.Count:" + triangles.Count);
         }
-
-
     }
 
+
+    public bool IsLineExists(Point point0, Point point1) {
+        foreach (Line l in lines) {
+            if (points[l.leftPointId] == point0 && points[l.rightPointId] == point1) return true;
+            if (points[l.leftPointId] == point1 && points[l.rightPointId] == point0) return true;
+        }
+
+        return false;
+    }
 
 
     private void SaveMeshToJson() {
@@ -194,9 +203,18 @@ public class MeshCreator2D : MonoBehaviour {
         foreach (Point point in points) point.position -= offset;
 
 
+        List<Line> linesSurfaceList = new List<Line>();
+        List<Line> linesInnerList = new List<Line>();
+
+        foreach (Line l in lines) {
+            if (l.volumetric) linesSurfaceList.Add(l);
+            else linesInnerList.Add(l);
+        }
+
         SaveSystem.WriteJson(SAVES_PATH + fileName + ".json", SaveSystem.SerializeJson(new Softbody2DJsonObject {
             pointList = points,
-            lineList = lines,
+            linesSurfaceList = linesSurfaceList,
+            linesInnerList = linesInnerList,
             triangleList = triangles,
         }));
     }
@@ -204,7 +222,7 @@ public class MeshCreator2D : MonoBehaviour {
         Softbody2DJsonObject data = SaveSystem.DeserializeJson<Softbody2DJsonObject>(SaveSystem.ReadJson(SAVES_PATH + fileName + ".json"));
 
         points = data.pointList;
-        lines = data.lineList;
+        lines = data.linesSurfaceList; lines.AddRange(data.linesInnerList);
         triangles = data.triangleList;
     }
 
@@ -230,7 +248,8 @@ public class MeshCreator2D : MonoBehaviour {
     [Serializable]
     public class Softbody2DJsonObject {
         public List<Point> pointList;
-        public List<Line> lineList;
+        public List<Line> linesSurfaceList;
+        public List<Line> linesInnerList;
         public List<Triangle> triangleList;
     }
 
